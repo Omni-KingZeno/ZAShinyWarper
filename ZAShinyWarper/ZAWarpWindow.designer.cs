@@ -33,33 +33,33 @@ namespace PLADumper
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ZAWarpWindow));
-            label1 = new Label();
-            textBox1 = new TextBox();
-            button1 = new Button();
-            groupBox1 = new GroupBox();
-            button9 = new Button();
-            button3 = new Button();
-            button2 = new Button();
-            listBox1 = new ListBox();
+            lbl_IP = new Label();
+            tB_IP = new TextBox();
+            btnConnect = new Button();
+            gBControls = new GroupBox();
+            btnDelete = new Button();
+            btnRestore = new Button();
+            btnSave = new Button();
+            lBCoords = new ListBox();
             label2 = new Label();
-            numericUpDown1 = new NumericUpDown();
-            button8 = new Button();
-            button7 = new Button();
-            button6 = new Button();
-            button5 = new Button();
-            label4 = new Label();
-            button4 = new Button();
+            nUDDistance = new NumericUpDown();
+            btnLeft = new Button();
+            btnRight = new Button();
+            btnBack = new Button();
+            btnForw = new Button();
+            lblThanks = new Label();
+            btnConnectUSB = new Button();
             gBShinyHunt = new GroupBox();
-            numericUpDownSaveFreq = new NumericUpDown();
+            nUDSaveFreq = new NumericUpDown();
             lblSaveFreq = new Label();
-            numericUpDownCamMove = new NumericUpDown();
+            nUDCamMove = new NumericUpDown();
             lblCam = new Label();
-            numericUpDownSpawnCheckTime = new NumericUpDown();
+            nUDCheckTime = new NumericUpDown();
             label3 = new Label();
-            numericUpDownScale = new NumericUpDown();
-            numericUpDownScale2 = new NumericUpDown();
-            lblScale = new Label();
-            lblScale2 = new Label();
+            nUDScaleMin = new NumericUpDown();
+            nUDScaleMax = new NumericUpDown();
+            lblScaleMin = new Label();
+            lblScaleMax = new Label();
             lblIVSpe = new Label();
             lblIVSpD = new Label();
             lblIVSpA = new Label();
@@ -81,7 +81,7 @@ namespace PLADumper
             lblShinyFound = new Label();
             btnWarp = new Button();
             lblCreateTwo = new Label();
-            StashedShinyGroup = new GroupBox();
+            gBStashedShiny = new GroupBox();
             StashedShiny1 = new PictureBox();
             StashedShiny2 = new PictureBox();
             StashedShiny3 = new PictureBox();
@@ -95,15 +95,15 @@ namespace PLADumper
             btnScreenOn = new Button();
             btnScreenOff = new Button();
             ShinyInfo = new ToolTip(components);
-            groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
+            gBControls.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)nUDDistance).BeginInit();
             gBShinyHunt.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDownSaveFreq).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDownCamMove).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDownSpawnCheckTime).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDownScale).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDownScale2).BeginInit();
-            StashedShinyGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)nUDSaveFreq).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nUDCamMove).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nUDCheckTime).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nUDScaleMin).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nUDScaleMax).BeginInit();
+            gBStashedShiny.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)StashedShiny1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)StashedShiny2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)StashedShiny3).BeginInit();
@@ -116,100 +116,133 @@ namespace PLADumper
             ((System.ComponentModel.ISupportInitialize)StashedShiny10).BeginInit();
             SuspendLayout();
             // 
-            // label1
+            // lbl_IP
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(15, 15);
-            label1.Margin = new Padding(4, 0, 4, 0);
-            label1.Name = "label1";
-            label1.Size = new Size(20, 15);
-            label1.TabIndex = 0;
-            label1.Text = "IP:";
+            lbl_IP.AutoSize = true;
+            lbl_IP.Location = new Point(15, 15);
+            lbl_IP.Margin = new Padding(4, 0, 4, 0);
+            lbl_IP.Name = "lbl_IP";
+            lbl_IP.Size = new Size(20, 15);
+            lbl_IP.TabIndex = 0;
+            lbl_IP.Text = "IP:";
             // 
-            // textBox1
+            // tB_IP
             // 
-            textBox1.Location = new Point(46, 12);
-            textBox1.Margin = new Padding(4, 3, 4, 3);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(272, 23);
-            textBox1.TabIndex = 1;
-            textBox1.Text = "192.168.0.1";
-            textBox1.TextChanged += textBox1_TextChanged;
+            tB_IP.Location = new Point(46, 12);
+            tB_IP.Margin = new Padding(4, 3, 4, 3);
+            tB_IP.Name = "tB_IP";
+            tB_IP.Size = new Size(272, 23);
+            tB_IP.TabIndex = 1;
+            tB_IP.Text = "192.168.0.1";
+            tB_IP.TextChanged += OnConfigurationChange;
             // 
-            // button1
+            // btnConnect
             // 
-            button1.Location = new Point(14, 42);
-            button1.Margin = new Padding(4, 3, 4, 3);
-            button1.Name = "button1";
-            button1.Size = new Size(304, 32);
-            button1.TabIndex = 2;
-            button1.Text = "Connect";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            btnConnect.Location = new Point(14, 42);
+            btnConnect.Margin = new Padding(4, 3, 4, 3);
+            btnConnect.Name = "btnConnect";
+            btnConnect.Size = new Size(304, 32);
+            btnConnect.TabIndex = 2;
+            btnConnect.Text = "Connect";
+            btnConnect.UseVisualStyleBackColor = true;
+            btnConnect.Click += OnClickConnect;
             // 
-            // groupBox1
+            // btnConnectUSB
             // 
-            groupBox1.Controls.Add(button9);
-            groupBox1.Controls.Add(button3);
-            groupBox1.Controls.Add(button2);
-            groupBox1.Controls.Add(listBox1);
-            groupBox1.Controls.Add(label2);
-            groupBox1.Controls.Add(numericUpDown1);
-            groupBox1.Controls.Add(button8);
-            groupBox1.Controls.Add(button7);
-            groupBox1.Controls.Add(button6);
-            groupBox1.Controls.Add(button5);
-            groupBox1.Enabled = false;
-            groupBox1.Location = new Point(15, 166);
-            groupBox1.Margin = new Padding(4, 3, 4, 3);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Padding = new Padding(4, 3, 4, 3);
-            groupBox1.Size = new Size(303, 380);
-            groupBox1.TabIndex = 3;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Editing";
+            btnConnectUSB.Location = new Point(14, 82);
+            btnConnectUSB.Margin = new Padding(4, 3, 4, 3);
+            btnConnectUSB.Name = "btnConnectUSB";
+            btnConnectUSB.Size = new Size(304, 36);
+            btnConnectUSB.TabIndex = 5;
+            btnConnectUSB.Text = "ConnectUSB";
+            btnConnectUSB.UseVisualStyleBackColor = true;
+            btnConnectUSB.Click += OnClickConnectUSB;
             // 
-            // button9
+            // btnScreenOn
             // 
-            button9.Location = new Point(204, 166);
-            button9.Margin = new Padding(4, 3, 4, 3);
-            button9.Name = "button9";
-            button9.Size = new Size(88, 27);
-            button9.TabIndex = 17;
-            button9.Text = "Delete Pos";
-            button9.UseVisualStyleBackColor = true;
-            button9.Click += button9_Click;
+            btnScreenOn.Enabled = false;
+            btnScreenOn.Location = new Point(15, 124);
+            btnScreenOn.Name = "btnScreenOn";
+            btnScreenOn.Size = new Size(148, 36);
+            btnScreenOn.TabIndex = 8;
+            btnScreenOn.Text = "Screen On";
+            btnScreenOn.UseVisualStyleBackColor = true;
+            btnScreenOn.Click += OnClickScreenOn;
             // 
-            // button3
+            // btnScreenOff
             // 
-            button3.Location = new Point(108, 166);
-            button3.Margin = new Padding(4, 3, 4, 3);
-            button3.Name = "button3";
-            button3.Size = new Size(88, 27);
-            button3.TabIndex = 16;
-            button3.Text = "Restore Pos";
-            button3.UseVisualStyleBackColor = true;
-            button3.Click += button3_Click_1;
+            btnScreenOff.Enabled = false;
+            btnScreenOff.Location = new Point(170, 124);
+            btnScreenOff.Name = "btnScreenOff";
+            btnScreenOff.Size = new Size(148, 36);
+            btnScreenOff.TabIndex = 9;
+            btnScreenOff.Text = "Screen Off";
+            btnScreenOff.UseVisualStyleBackColor = true;
+            btnScreenOff.Click += OnClickScreenOff;
             // 
-            // button2
+            // gBControls
             // 
-            button2.Location = new Point(12, 166);
-            button2.Margin = new Padding(4, 3, 4, 3);
-            button2.Name = "button2";
-            button2.Size = new Size(88, 27);
-            button2.TabIndex = 15;
-            button2.Text = "Save Pos";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click_1;
+            gBControls.Controls.Add(btnDelete);
+            gBControls.Controls.Add(btnRestore);
+            gBControls.Controls.Add(btnSave);
+            gBControls.Controls.Add(lBCoords);
+            gBControls.Controls.Add(label2);
+            gBControls.Controls.Add(nUDDistance);
+            gBControls.Controls.Add(btnLeft);
+            gBControls.Controls.Add(btnRight);
+            gBControls.Controls.Add(btnBack);
+            gBControls.Controls.Add(btnForw);
+            gBControls.Enabled = false;
+            gBControls.Location = new Point(15, 166);
+            gBControls.Margin = new Padding(4, 3, 4, 3);
+            gBControls.Name = "gBControls";
+            gBControls.Padding = new Padding(4, 3, 4, 3);
+            gBControls.Size = new Size(303, 380);
+            gBControls.TabIndex = 3;
+            gBControls.TabStop = false;
+            gBControls.Text = "Editing";
             // 
-            // listBox1
+            // lBCoords
             // 
-            listBox1.FormattingEnabled = true;
-            listBox1.Location = new Point(10, 22);
-            listBox1.Margin = new Padding(4, 3, 4, 3);
-            listBox1.Name = "listBox1";
-            listBox1.Size = new Size(285, 139);
-            listBox1.TabIndex = 14;
+            lBCoords.FormattingEnabled = true;
+            lBCoords.Location = new Point(10, 22);
+            lBCoords.Margin = new Padding(4, 3, 4, 3);
+            lBCoords.Name = "lBCoords";
+            lBCoords.Size = new Size(285, 139);
+            lBCoords.TabIndex = 14;
+            // 
+            // btnDelete
+            // 
+            btnDelete.Location = new Point(204, 166);
+            btnDelete.Margin = new Padding(4, 3, 4, 3);
+            btnDelete.Name = "btnDelete";
+            btnDelete.Size = new Size(88, 27);
+            btnDelete.TabIndex = 17;
+            btnDelete.Text = "Delete Pos";
+            btnDelete.UseVisualStyleBackColor = true;
+            btnDelete.Click += OnClickDelete;
+            // 
+            // btnRestore
+            // 
+            btnRestore.Location = new Point(108, 166);
+            btnRestore.Margin = new Padding(4, 3, 4, 3);
+            btnRestore.Name = "btnRestore";
+            btnRestore.Size = new Size(88, 27);
+            btnRestore.TabIndex = 16;
+            btnRestore.Text = "Restore Pos";
+            btnRestore.UseVisualStyleBackColor = true;
+            btnRestore.Click += OnClickRestore;
+            // 
+            // btnSave
+            // 
+            btnSave.Location = new Point(12, 166);
+            btnSave.Margin = new Padding(4, 3, 4, 3);
+            btnSave.Name = "btnSave";
+            btnSave.Size = new Size(88, 27);
+            btnSave.TabIndex = 15;
+            btnSave.Text = "Save Pos";
+            btnSave.UseVisualStyleBackColor = true;
+            btnSave.Click += OnClickSave;
             // 
             // label2
             // 
@@ -221,93 +254,82 @@ namespace PLADumper
             label2.TabIndex = 13;
             label2.Text = "Free warp:";
             // 
-            // numericUpDown1
+            // btnLeft
             // 
-            numericUpDown1.Location = new Point(216, 343);
-            numericUpDown1.Margin = new Padding(4, 3, 4, 3);
-            numericUpDown1.Name = "numericUpDown1";
-            numericUpDown1.Size = new Size(76, 23);
-            numericUpDown1.TabIndex = 12;
-            numericUpDown1.Value = new decimal(new int[] { 3, 0, 0, 0 });
+            btnLeft.Location = new Point(12, 288);
+            btnLeft.Margin = new Padding(4, 3, 4, 3);
+            btnLeft.Name = "btnLeft";
+            btnLeft.Size = new Size(88, 27);
+            btnLeft.TabIndex = 11;
+            btnLeft.Text = "←";
+            btnLeft.UseVisualStyleBackColor = true;
+            btnLeft.Click += OnClickLeft;
             // 
-            // button8
+            // btnRight
             // 
-            button8.Location = new Point(12, 288);
-            button8.Margin = new Padding(4, 3, 4, 3);
-            button8.Name = "button8";
-            button8.Size = new Size(88, 27);
-            button8.TabIndex = 11;
-            button8.Text = "←";
-            button8.UseVisualStyleBackColor = true;
-            button8.Click += button8_Click;
+            btnRight.Location = new Point(204, 288);
+            btnRight.Margin = new Padding(4, 3, 4, 3);
+            btnRight.Name = "btnRight";
+            btnRight.Size = new Size(88, 27);
+            btnRight.TabIndex = 10;
+            btnRight.Text = "→";
+            btnRight.UseVisualStyleBackColor = true;
+            btnRight.Click += OnClickRight;
             // 
-            // button7
+            // btnBack
             // 
-            button7.Location = new Point(204, 288);
-            button7.Margin = new Padding(4, 3, 4, 3);
-            button7.Name = "button7";
-            button7.Size = new Size(88, 27);
-            button7.TabIndex = 10;
-            button7.Text = "→";
-            button7.UseVisualStyleBackColor = true;
-            button7.Click += button7_Click;
+            btnBack.Location = new Point(108, 327);
+            btnBack.Margin = new Padding(4, 3, 4, 3);
+            btnBack.Name = "btnBack";
+            btnBack.Size = new Size(88, 27);
+            btnBack.TabIndex = 9;
+            btnBack.Text = "↓";
+            btnBack.UseVisualStyleBackColor = true;
+            btnBack.Click += OnClickBackwards;
             // 
-            // button6
+            // btnForw
             // 
-            button6.Location = new Point(108, 327);
-            button6.Margin = new Padding(4, 3, 4, 3);
-            button6.Name = "button6";
-            button6.Size = new Size(88, 27);
-            button6.TabIndex = 9;
-            button6.Text = "↓";
-            button6.UseVisualStyleBackColor = true;
-            button6.Click += button6_Click;
+            btnForw.Location = new Point(108, 251);
+            btnForw.Margin = new Padding(4, 3, 4, 3);
+            btnForw.Name = "btnForw";
+            btnForw.Size = new Size(88, 27);
+            btnForw.TabIndex = 8;
+            btnForw.Text = "↑";
+            btnForw.UseVisualStyleBackColor = true;
+            btnForw.Click += OnClickForwards;
             // 
-            // button5
+            // nUDDistance
             // 
-            button5.Location = new Point(108, 251);
-            button5.Margin = new Padding(4, 3, 4, 3);
-            button5.Name = "button5";
-            button5.Size = new Size(88, 27);
-            button5.TabIndex = 8;
-            button5.Text = "↑";
-            button5.UseVisualStyleBackColor = true;
-            button5.Click += button5_Click;
+            nUDDistance.Location = new Point(216, 343);
+            nUDDistance.Margin = new Padding(4, 3, 4, 3);
+            nUDDistance.Name = "nUDDistance";
+            nUDDistance.Size = new Size(76, 23);
+            nUDDistance.TabIndex = 12;
+            nUDDistance.Value = new decimal(new int[] { 3, 0, 0, 0 });
             // 
-            // label4
+            // lblThanks
             // 
-            label4.AutoSize = true;
-            label4.Location = new Point(55, 555);
-            label4.Margin = new Padding(4, 0, 4, 0);
-            label4.Name = "label4";
-            label4.Size = new Size(216, 30);
-            label4.TabIndex = 4;
-            label4.Text = "Many thanks to Kurt for PKHeX and\r\nAnubis for the Z-A shiny stash research.";
-            label4.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // button4
-            // 
-            button4.Location = new Point(14, 82);
-            button4.Margin = new Padding(4, 3, 4, 3);
-            button4.Name = "button4";
-            button4.Size = new Size(304, 36);
-            button4.TabIndex = 5;
-            button4.Text = "ConnectUSB";
-            button4.UseVisualStyleBackColor = true;
-            button4.Click += button4_Click;
+            lblThanks.AutoSize = true;
+            lblThanks.Location = new Point(55, 555);
+            lblThanks.Margin = new Padding(4, 0, 4, 0);
+            lblThanks.Name = "lblThanks";
+            lblThanks.Size = new Size(216, 30);
+            lblThanks.TabIndex = 4;
+            lblThanks.Text = "Many thanks to Kurt for PKHeX and\r\nAnubis for the Z-A shiny stash research.";
+            lblThanks.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // gBShinyHunt
             // 
-            gBShinyHunt.Controls.Add(numericUpDownSaveFreq);
+            gBShinyHunt.Controls.Add(nUDSaveFreq);
             gBShinyHunt.Controls.Add(lblSaveFreq);
-            gBShinyHunt.Controls.Add(numericUpDownCamMove);
+            gBShinyHunt.Controls.Add(nUDCamMove);
             gBShinyHunt.Controls.Add(lblCam);
-            gBShinyHunt.Controls.Add(numericUpDownSpawnCheckTime);
+            gBShinyHunt.Controls.Add(nUDCheckTime);
             gBShinyHunt.Controls.Add(label3);
-            gBShinyHunt.Controls.Add(numericUpDownScale);
-            gBShinyHunt.Controls.Add(numericUpDownScale2);
-            gBShinyHunt.Controls.Add(lblScale);
-            gBShinyHunt.Controls.Add(lblScale2);
+            gBShinyHunt.Controls.Add(nUDScaleMin);
+            gBShinyHunt.Controls.Add(nUDScaleMax);
+            gBShinyHunt.Controls.Add(lblScaleMin);
+            gBShinyHunt.Controls.Add(lblScaleMax);
             gBShinyHunt.Controls.Add(lblIVSpe);
             gBShinyHunt.Controls.Add(lblIVSpD);
             gBShinyHunt.Controls.Add(lblIVSpA);
@@ -339,14 +361,15 @@ namespace PLADumper
             gBShinyHunt.TabStop = false;
             gBShinyHunt.Text = "Shiny Hunting";
             // 
-            // numericUpDownSaveFreq
+            // nUDSaveFreq
             // 
-            numericUpDownSaveFreq.Location = new Point(144, 207);
-            numericUpDownSaveFreq.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            numericUpDownSaveFreq.Name = "numericUpDownSaveFreq";
-            numericUpDownSaveFreq.Size = new Size(63, 23);
-            numericUpDownSaveFreq.TabIndex = 28;
-            numericUpDownSaveFreq.Value = new decimal(new int[] { 3, 0, 0, 0 });
+            nUDSaveFreq.Location = new Point(144, 207);
+            nUDSaveFreq.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            nUDSaveFreq.Name = "nUDSaveFreq";
+            nUDSaveFreq.Size = new Size(63, 23);
+            nUDSaveFreq.TabIndex = 28;
+            nUDSaveFreq.Value = new decimal(new int[] { 3, 0, 0, 0 });
+            nUDSaveFreq.ValueChanged += OnConfigurationChange;
             // 
             // lblSaveFreq
             // 
@@ -357,16 +380,17 @@ namespace PLADumper
             lblSaveFreq.TabIndex = 27;
             lblSaveFreq.Text = "Save frequency:";
             // 
-            // numericUpDownCamMove
+            // nUDCamMove
             // 
-            numericUpDownCamMove.Increment = new decimal(new int[] { 1000, 0, 0, 0 });
-            numericUpDownCamMove.Location = new Point(14, 183);
-            numericUpDownCamMove.Maximum = new decimal(new int[] { 32000, 0, 0, 0 });
-            numericUpDownCamMove.Minimum = new decimal(new int[] { 32000, 0, 0, int.MinValue });
-            numericUpDownCamMove.Name = "numericUpDownCamMove";
-            numericUpDownCamMove.Size = new Size(193, 23);
-            numericUpDownCamMove.TabIndex = 26;
-            numericUpDownCamMove.Value = new decimal(new int[] { 16000, 0, 0, 0 });
+            nUDCamMove.Increment = new decimal(new int[] { 1000, 0, 0, 0 });
+            nUDCamMove.Location = new Point(14, 183);
+            nUDCamMove.Maximum = new decimal(new int[] { 32000, 0, 0, 0 });
+            nUDCamMove.Minimum = new decimal(new int[] { 32000, 0, 0, int.MinValue });
+            nUDCamMove.Name = "nUDCamMove";
+            nUDCamMove.Size = new Size(193, 23);
+            nUDCamMove.TabIndex = 26;
+            nUDCamMove.Value = new decimal(new int[] { 16000, 0, 0, 0 });
+            nUDCamMove.ValueChanged += OnConfigurationChange;
             // 
             // lblCam
             // 
@@ -378,15 +402,16 @@ namespace PLADumper
             lblCam.TabIndex = 25;
             lblCam.Text = "Cam move speed (-32000 to 32000)";
             // 
-            // numericUpDownSpawnCheckTime
+            // nUDCheckTime
             // 
-            numericUpDownSpawnCheckTime.Increment = new decimal(new int[] { 1000, 0, 0, 0 });
-            numericUpDownSpawnCheckTime.Location = new Point(12, 140);
-            numericUpDownSpawnCheckTime.Maximum = new decimal(new int[] { 20000, 0, 0, 0 });
-            numericUpDownSpawnCheckTime.Name = "numericUpDownSpawnCheckTime";
-            numericUpDownSpawnCheckTime.Size = new Size(193, 23);
-            numericUpDownSpawnCheckTime.TabIndex = 24;
-            numericUpDownSpawnCheckTime.Value = new decimal(new int[] { 2000, 0, 0, 0 });
+            nUDCheckTime.Increment = new decimal(new int[] { 1000, 0, 0, 0 });
+            nUDCheckTime.Location = new Point(12, 140);
+            nUDCheckTime.Maximum = new decimal(new int[] { 20000, 0, 0, 0 });
+            nUDCheckTime.Name = "nUDCheckTime";
+            nUDCheckTime.Size = new Size(193, 23);
+            nUDCheckTime.TabIndex = 24;
+            nUDCheckTime.Value = new decimal(new int[] { 2000, 0, 0, 0 });
+            nUDCheckTime.ValueChanged += OnConfigurationChange;
             // 
             // label3
             // 
@@ -397,40 +422,42 @@ namespace PLADumper
             label3.TabIndex = 23;
             label3.Text = "Spawn check time (ms):";
             // 
-            // numericUpDownScale
+            // nUDScaleMin
             // 
-            numericUpDownScale.Location = new Point(80, 508);
-            numericUpDownScale.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
-            numericUpDownScale.Name = "numericUpDownScale";
-            numericUpDownScale.Size = new Size(117, 23);
-            numericUpDownScale.TabIndex = 22;
+            nUDScaleMin.Location = new Point(80, 508);
+            nUDScaleMin.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
+            nUDScaleMin.Name = "nUDScaleMin";
+            nUDScaleMin.Size = new Size(117, 23);
+            nUDScaleMin.TabIndex = 22;
+            nUDScaleMin.ValueChanged += OnConfigurationChange;
             // 
-            // numericUpDownScale2
+            // nUDScaleMax
             // 
-            numericUpDownScale2.Location = new Point(80, 535);
-            numericUpDownScale2.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
-            numericUpDownScale2.Name = "numericUpDownScale2";
-            numericUpDownScale2.Size = new Size(117, 23);
-            numericUpDownScale2.TabIndex = 22;
-            numericUpDownScale2.Value = new decimal(new int[] { 255, 0, 0, 0 });
+            nUDScaleMax.Location = new Point(80, 535);
+            nUDScaleMax.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
+            nUDScaleMax.Name = "nUDScaleMax";
+            nUDScaleMax.Size = new Size(117, 23);
+            nUDScaleMax.TabIndex = 22;
+            nUDScaleMax.Value = new decimal(new int[] { 255, 0, 0, 0 });
+            nUDScaleMax.ValueChanged += OnConfigurationChange;
             // 
-            // lblScale
+            // lblScaleMin
             // 
-            lblScale.AutoSize = true;
-            lblScale.Location = new Point(14, 510);
-            lblScale.Name = "lblScale";
-            lblScale.Size = new Size(60, 15);
-            lblScale.TabIndex = 21;
-            lblScale.Text = "Min scale:";
+            lblScaleMin.AutoSize = true;
+            lblScaleMin.Location = new Point(14, 510);
+            lblScaleMin.Name = "lblScaleMin";
+            lblScaleMin.Size = new Size(60, 15);
+            lblScaleMin.TabIndex = 21;
+            lblScaleMin.Text = "Min scale:";
             // 
-            // lblScale2
+            // lblScaleMax
             // 
-            lblScale2.AutoSize = true;
-            lblScale2.Location = new Point(14, 538);
-            lblScale2.Name = "lblScale2";
-            lblScale2.Size = new Size(62, 15);
-            lblScale2.TabIndex = 21;
-            lblScale2.Text = "Max scale:";
+            lblScaleMax.AutoSize = true;
+            lblScaleMax.Location = new Point(14, 538);
+            lblScaleMax.Name = "lblScaleMax";
+            lblScaleMax.Size = new Size(62, 15);
+            lblScaleMax.TabIndex = 21;
+            lblScaleMax.Text = "Max scale:";
             // 
             // lblIVSpe
             // 
@@ -474,6 +501,7 @@ namespace PLADumper
             cBIVSpD.Name = "cBIVSpD";
             cBIVSpD.Size = new Size(57, 23);
             cBIVSpD.TabIndex = 15;
+            cBIVSpD.SelectedIndexChanged += OnConfigurationChange;
             // 
             // cBIVSpA
             // 
@@ -482,6 +510,7 @@ namespace PLADumper
             cBIVSpA.Name = "cBIVSpA";
             cBIVSpA.Size = new Size(57, 23);
             cBIVSpA.TabIndex = 14;
+            cBIVSpA.SelectedIndexChanged += OnConfigurationChange;
             // 
             // lblIVDef
             // 
@@ -517,6 +546,7 @@ namespace PLADumper
             cBIVDef.Name = "cBIVDef";
             cBIVDef.Size = new Size(57, 23);
             cBIVDef.TabIndex = 10;
+            cBIVDef.SelectedIndexChanged += OnConfigurationChange;
             // 
             // cBIVAtk
             // 
@@ -525,6 +555,7 @@ namespace PLADumper
             cBIVAtk.Name = "cBIVAtk";
             cBIVAtk.Size = new Size(57, 23);
             cBIVAtk.TabIndex = 9;
+            cBIVAtk.SelectedIndexChanged += OnConfigurationChange;
             // 
             // cBIVHP
             // 
@@ -533,6 +564,7 @@ namespace PLADumper
             cBIVHP.Name = "cBIVHP";
             cBIVHP.Size = new Size(57, 23);
             cBIVHP.TabIndex = 8;
+            cBIVHP.SelectedIndexChanged += OnConfigurationChange;
             // 
             // lblIV
             // 
@@ -552,8 +584,8 @@ namespace PLADumper
             cBSpecies.Name = "cBSpecies";
             cBSpecies.Size = new Size(193, 94);
             cBSpecies.TabIndex = 6;
-            cBSpecies.ItemCheck += cBSpecies_ItemCheck;
-            cBSpecies.SelectedIndexChanged += cBSpecies_SelectedIndexChanged;
+            cBSpecies.ItemCheck += OnConfigurationChange;
+            cBSpecies.SelectedIndexChanged += OnSpeciesSelectedIndexChange;
             // 
             // btnResetSpecies
             // 
@@ -563,7 +595,7 @@ namespace PLADumper
             btnResetSpecies.TabIndex = 29;
             btnResetSpecies.Text = "Reset";
             btnResetSpecies.UseVisualStyleBackColor = true;
-            btnResetSpecies.Click += btnResetSpecies_Click;
+            btnResetSpecies.Click += OnClickReset;
             // 
             // lblSpecies
             // 
@@ -591,6 +623,7 @@ namespace PLADumper
             cBWhenShinyFound.Name = "cBWhenShinyFound";
             cBWhenShinyFound.Size = new Size(193, 23);
             cBWhenShinyFound.TabIndex = 3;
+            cBWhenShinyFound.SelectedIndexChanged += OnConfigurationChange;
             // 
             // lblShinyFound
             // 
@@ -611,7 +644,7 @@ namespace PLADumper
             btnWarp.TabIndex = 1;
             btnWarp.Text = "Begin Warping";
             btnWarp.UseVisualStyleBackColor = true;
-            btnWarp.Click += btnWarp_Click;
+            btnWarp.Click += OnClickWarp;
             // 
             // lblCreateTwo
             // 
@@ -623,25 +656,25 @@ namespace PLADumper
             lblCreateTwo.TabIndex = 0;
             lblCreateTwo.Text = "Create at least two warp points.";
             // 
-            // StashedShinyGroup
+            // gBStashedShiny
             // 
-            StashedShinyGroup.Controls.Add(StashedShiny1);
-            StashedShinyGroup.Controls.Add(StashedShiny2);
-            StashedShinyGroup.Controls.Add(StashedShiny3);
-            StashedShinyGroup.Controls.Add(StashedShiny4);
-            StashedShinyGroup.Controls.Add(StashedShiny5);
-            StashedShinyGroup.Controls.Add(StashedShiny6);
-            StashedShinyGroup.Controls.Add(StashedShiny7);
-            StashedShinyGroup.Controls.Add(StashedShiny8);
-            StashedShinyGroup.Controls.Add(StashedShiny9);
-            StashedShinyGroup.Controls.Add(StashedShiny10);
-            StashedShinyGroup.Enabled = false;
-            StashedShinyGroup.Location = new Point(546, 15);
-            StashedShinyGroup.Name = "StashedShinyGroup";
-            StashedShinyGroup.Size = new Size(212, 536);
-            StashedShinyGroup.TabIndex = 7;
-            StashedShinyGroup.TabStop = false;
-            StashedShinyGroup.Text = "Stashed Shiny";
+            gBStashedShiny.Controls.Add(StashedShiny1);
+            gBStashedShiny.Controls.Add(StashedShiny2);
+            gBStashedShiny.Controls.Add(StashedShiny3);
+            gBStashedShiny.Controls.Add(StashedShiny4);
+            gBStashedShiny.Controls.Add(StashedShiny5);
+            gBStashedShiny.Controls.Add(StashedShiny6);
+            gBStashedShiny.Controls.Add(StashedShiny7);
+            gBStashedShiny.Controls.Add(StashedShiny8);
+            gBStashedShiny.Controls.Add(StashedShiny9);
+            gBStashedShiny.Controls.Add(StashedShiny10);
+            gBStashedShiny.Enabled = false;
+            gBStashedShiny.Location = new Point(546, 15);
+            gBStashedShiny.Name = "gBStashedShiny";
+            gBStashedShiny.Size = new Size(212, 536);
+            gBStashedShiny.TabIndex = 7;
+            gBStashedShiny.TabStop = false;
+            gBStashedShiny.Text = "Stashed Shiny";
             // 
             // StashedShiny1
             // 
@@ -753,28 +786,6 @@ namespace PLADumper
             StashedShiny10.TabStop = false;
             StashedShiny10.MouseEnter += OnMouseHover;
             // 
-            // btnScreenOn
-            // 
-            btnScreenOn.Enabled = false;
-            btnScreenOn.Location = new Point(15, 124);
-            btnScreenOn.Name = "btnScreenOn";
-            btnScreenOn.Size = new Size(148, 36);
-            btnScreenOn.TabIndex = 8;
-            btnScreenOn.Text = "Screen On";
-            btnScreenOn.UseVisualStyleBackColor = true;
-            btnScreenOn.Click += OnClickScreenOn;
-            // 
-            // btnScreenOff
-            // 
-            btnScreenOff.Enabled = false;
-            btnScreenOff.Location = new Point(170, 124);
-            btnScreenOff.Name = "btnScreenOff";
-            btnScreenOff.Size = new Size(148, 36);
-            btnScreenOff.TabIndex = 9;
-            btnScreenOff.Text = "Screen Off";
-            btnScreenOff.UseVisualStyleBackColor = true;
-            btnScreenOff.Click += OnClickScreenOff;
-            // 
             // ShinyInfo
             // 
             ShinyInfo.AutoPopDelay = 30000;
@@ -788,31 +799,31 @@ namespace PLADumper
             ClientSize = new Size(770, 594);
             Controls.Add(btnScreenOff);
             Controls.Add(btnScreenOn);
-            Controls.Add(StashedShinyGroup);
+            Controls.Add(gBStashedShiny);
             Controls.Add(gBShinyHunt);
-            Controls.Add(button4);
-            Controls.Add(label4);
-            Controls.Add(groupBox1);
-            Controls.Add(button1);
-            Controls.Add(textBox1);
-            Controls.Add(label1);
+            Controls.Add(btnConnectUSB);
+            Controls.Add(lblThanks);
+            Controls.Add(gBControls);
+            Controls.Add(btnConnect);
+            Controls.Add(tB_IP);
+            Controls.Add(lbl_IP);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4, 3, 4, 3);
             Name = "ZAWarpWindow";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Z-A Shiny Warper by Berichan";
-            Load += Form1_Load;
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
+            Load += LoadDefaults;
+            gBControls.ResumeLayout(false);
+            gBControls.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)nUDDistance).EndInit();
             gBShinyHunt.ResumeLayout(false);
             gBShinyHunt.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDownSaveFreq).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDownCamMove).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDownSpawnCheckTime).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDownScale).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numericUpDownScale2).EndInit();
-            StashedShinyGroup.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)nUDSaveFreq).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nUDCamMove).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nUDCheckTime).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nUDScaleMin).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nUDScaleMax).EndInit();
+            gBStashedShiny.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)StashedShiny1).EndInit();
             ((System.ComponentModel.ISupportInitialize)StashedShiny2).EndInit();
             ((System.ComponentModel.ISupportInitialize)StashedShiny3).EndInit();
@@ -825,27 +836,26 @@ namespace PLADumper
             ((System.ComponentModel.ISupportInitialize)StashedShiny10).EndInit();
             ResumeLayout(false);
             PerformLayout();
-
         }
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Label lbl_IP;
+        private System.Windows.Forms.TextBox tB_IP;
+        private System.Windows.Forms.Button btnConnect;
+        private System.Windows.Forms.GroupBox gBControls;
+        private System.Windows.Forms.Label lblThanks;
+        private System.Windows.Forms.Button btnConnectUSB;
+        private System.Windows.Forms.Button btnLeft;
+        private System.Windows.Forms.Button btnRight;
+        private System.Windows.Forms.Button btnBack;
+        private System.Windows.Forms.Button btnForw;
+        private System.Windows.Forms.NumericUpDown nUDDistance;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button button9;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Button btnRestore;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.ListBox lBCoords;
         private System.Windows.Forms.GroupBox gBShinyHunt;
         private System.Windows.Forms.Label lblCreateTwo;
         private System.Windows.Forms.ComboBox cBWhenShinyFound;
@@ -868,17 +878,17 @@ namespace PLADumper
         private System.Windows.Forms.ComboBox cBIVAtk;
         private System.Windows.Forms.ComboBox cBIVHP;
         private System.Windows.Forms.Label lblIV;
-        private System.Windows.Forms.NumericUpDown numericUpDownScale;
-        private System.Windows.Forms.NumericUpDown numericUpDownScale2;
-        private System.Windows.Forms.Label lblScale;
-        private System.Windows.Forms.Label lblScale2;
-        private System.Windows.Forms.NumericUpDown numericUpDownSpawnCheckTime;
+        private System.Windows.Forms.NumericUpDown nUDScaleMin;
+        private System.Windows.Forms.NumericUpDown nUDScaleMax;
+        private System.Windows.Forms.Label lblScaleMin;
+        private System.Windows.Forms.Label lblScaleMax;
+        private System.Windows.Forms.NumericUpDown nUDCheckTime;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.NumericUpDown numericUpDownCamMove;
+        private System.Windows.Forms.NumericUpDown nUDCamMove;
         private System.Windows.Forms.Label lblCam;
-        private System.Windows.Forms.NumericUpDown numericUpDownSaveFreq;
+        private System.Windows.Forms.NumericUpDown nUDSaveFreq;
         private System.Windows.Forms.Label lblSaveFreq;
-        private GroupBox StashedShinyGroup;
+        private GroupBox gBStashedShiny;
         private PictureBox StashedShiny1;
         private PictureBox StashedShiny3;
         private PictureBox StashedShiny5;

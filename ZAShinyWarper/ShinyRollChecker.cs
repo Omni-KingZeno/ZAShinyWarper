@@ -13,7 +13,7 @@ namespace PLAWarper
     {
         public static (int?, ulong?) CheckValidDirtyZARNG(T pkm, int fivCheck = -1) // Dirty placeholder until we have a proper encounter/param input, partially leveraged from PKHeX
         {
-            var p = new GenerateParam9();
+            // var p = new GenerateParam9(); Unused for now
             var fiv = fivCheck == -1 ? pkm.FlawlessIVCount : fivCheck;
 
             var ec = pkm.EncryptionConstant;
@@ -39,7 +39,7 @@ namespace PLAWarper
 
                 // We don't have encounter data for now, so we just skip possible flawless IVs. Alphas generally have 3 flawless IVs but I don't want to assume anything before PKHeX releases, so have this dirty thing.
                 if (fiv > 0)
-                { 
+                {
                     for (int j = 0; j < 6; j++)
                     {
                         bool isFlawless = ivspk[j] == MAX;

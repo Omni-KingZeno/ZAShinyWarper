@@ -5,6 +5,7 @@
     <RootNamespace>ZAShinyWarper</RootNamespace>
     <AssemblyName>ZAShinyWarper</AssemblyName>
     <LangVersion>13</LangVersion>
+    <NoWarn>CS0436,CS8604</NoWarn>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
