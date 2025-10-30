@@ -1,13 +1,8 @@
-﻿using PKHeX.Core;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using PKHeX.Core;
 
-namespace PLAWarper
+namespace ZAWarper.helpers
 {
     public static class ShinyRollChecker<T> where T : PKM, new()
     {

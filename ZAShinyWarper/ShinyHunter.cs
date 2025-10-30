@@ -1,15 +1,14 @@
-﻿using NHSE.Injection;
-using PKHeX.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
+using NHSE.Injection;
+using PKHeX.Core;
+using ZAWarper.helpers;
 
-namespace PLAWarper
+namespace ZAWarper
 {
     public enum ShinyFoundAction
     {
@@ -26,7 +25,7 @@ namespace PLAWarper
 
     public class ShinyHunter<T> where T : PKM, new()
     {
-        public class ShinyFilter<T> where T : PKM, new()
+        public class ShinyFilter
         {
             public IVType[] IVs { get; set; } = new IVType[6]
             {
@@ -92,7 +91,7 @@ namespace PLAWarper
             }
         }
 
-        public class StashedShiny<T> where T : PKM, new ()
+        public class StashedShiny
         {
             public T PKM { get; private set; }
             public ulong LocationHash { get; private set; } = 0;
@@ -105,7 +104,7 @@ namespace PLAWarper
                 PKM = pk;
                 LocationHash = locHash;
                 if (PKM is PA9 zapk)
-                (Rolls, Seed) = ShinyRollChecker<T>.CheckValidDirtyZARNG(PKM);
+                    (Rolls, Seed) = ShinyRollChecker<T>.CheckValidDirtyZARNG(PKM);
             }
 
             public string GetRollsInfo()
@@ -117,23 +116,23 @@ namespace PLAWarper
             }
 
             public override string ToString() => $"Location hash: {LocationHash:X16}\r\n{GetRollsInfo()}\r\n" + ShowdownParsing.GetShowdownText(PKM) + "\r\n";
-            
+
         }
 
         private const int STASHED_SHINIES_MAX = 10;
         private const int PA9_SIZE = 0x158;
         private const int PA9_BUFFER = 0x1F0;
         private const string STASH_FOLDER = "StashedShinies";
-        
-        private readonly long[] jumpsPos = new long[] { 0x5F0B250, 0x120, 0x168 }; // [[[main+5F0B250]+120]+168]
 
-        public IList<StashedShiny<T>> PreviousStashedShinies { get; private set; } = [];
-        public IList<StashedShiny<T>> StashedShinies { get; private set; } = [];
-        public IList<StashedShiny<T>> DifferentShinies { get; private set; } = [];
+        private readonly long[] jumpsPos = [0x5F0B250, 0x120, 0x168]; // [[[main+5F0B250]+120]+168]
 
-        public ShinyFilter<T> Filter { get; private set; } = new ShinyFilter<T>();
+        public IList<StashedShiny> PreviousStashedShinies { get; private set; } = [];
+        public IList<StashedShiny> StashedShinies { get; private set; } = [];
+        public IList<StashedShiny> DifferentShinies { get; private set; } = [];
 
-        private ulong getShinyStashOffset(IRAMReadWriter bot)
+        public ShinyFilter Filter { get; private set; } = new ShinyFilter();
+
+        private ulong GetShinyStashOffset(IRAMReadWriter bot)
         {
             return bot.FollowMainPointer(jumpsPos);
         }
@@ -146,9 +145,9 @@ namespace PLAWarper
         /// <returns>whether or not a new one has entered since previous</returns>
         public bool LoadStashedShinies(IRAMReadWriter bot, string path)
         {
-            var offs = getShinyStashOffset(bot);
+            var offs = GetShinyStashOffset(bot);
             PreviousStashedShinies = StashedShinies;
-            StashedShinies = new List<StashedShiny<T>>();
+            StashedShinies = new List<StashedShiny>();
 
             if (!Directory.Exists(STASH_FOLDER))
                 Directory.CreateDirectory(STASH_FOLDER);
@@ -163,7 +162,7 @@ namespace PLAWarper
                 var location = BitConverter.ToUInt64(data, 0);
                 if (pk.Species != 0)
                 {
-                    var stashed = new StashedShiny<T>(pk, location);
+                    var stashed = new StashedShiny(pk, location);
                     if (!StashedShinies.Any(x => x.EncryptionConstant == pk.EncryptionConstant))
                     {
                         StashedShinies.Add(stashed);
@@ -181,7 +180,7 @@ namespace PLAWarper
             return DifferentShinies.Any();
         }
 
-        public string GetShinyStashInfo(IList<StashedShiny<T>> stash)
+        public string GetShinyStashInfo(IList<StashedShiny> stash)
         {
             if (stash.Count == 0)
                 return "No stashed shinies found.";
@@ -204,7 +203,7 @@ namespace PLAWarper
             return sets.ToString();
         }
 
-        public void InitialiseFilter(ShinyFilter<T> filter)
+        public void InitialiseFilter(ShinyFilter filter)
         {
             Filter = filter;
         }

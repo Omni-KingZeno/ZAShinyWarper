@@ -1,8 +1,8 @@
-﻿using LibUsbDotNet;
-using LibUsbDotNet.Main;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using LibUsbDotNet;
+using LibUsbDotNet.Main;
 
 namespace NHSE.Injection
 {
@@ -15,7 +15,7 @@ namespace NHSE.Injection
         public bool Connected { get; private set; }
         public int MaximumTransferSize { get { return 468; } }
 
-        private readonly object _sync = new object();
+        private readonly object _sync = new();
 
         public bool Connect()
         {
@@ -210,7 +210,7 @@ namespace NHSE.Injection
 
         private byte[] ReadBytesLarge(ulong offset, int length, RWMethod method)
         {
-            List<byte> read = new List<byte>();
+            List<byte> read = new();
             for (int i = 0; i < length; i += MaximumTransferSize)
                 read.AddRange(ReadBytes(offset + (uint)i, Math.Min(MaximumTransferSize, length - i), method));
             return read.ToArray();

@@ -1,6 +1,6 @@
-﻿namespace PLAWarper
+﻿namespace ZAWarper
 {
-    partial class LabelForm
+    partial class WarpProgressForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,32 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            lblInfoText = new System.Windows.Forms.Label();
+            lblWarping = new System.Windows.Forms.Label();
             SuspendLayout();
             // 
-            // lblInfoText
+            // lblWarping
             // 
-            lblInfoText.Location = new System.Drawing.Point(12, 9);
-            lblInfoText.Name = "lblInfoText";
-            lblInfoText.Size = new System.Drawing.Size(308, 89);
-            lblInfoText.TabIndex = 0;
-            lblInfoText.Text = "Text goes here";
-            lblInfoText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            lblWarping.Location = new System.Drawing.Point(12, 9);
+            lblWarping.Name = "lblWarping";
+            lblWarping.Size = new System.Drawing.Size(308, 89);
+            lblWarping.TabIndex = 0;
+            lblWarping.Text = "Warping...";
+            lblWarping.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // LabelForm
+            // WarpProgressForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(332, 107);
             ControlBox = false;
-            Controls.Add(lblInfoText);
-            Name = "LabelForm";
-            Text = "LabelForm";
+            Controls.Add(lblWarping);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            Name = "WarpProgressForm";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            TopMost = true;
             ResumeLayout(false);
         }
 
         #endregion
 
-        private System.Windows.Forms.Label lblInfoText;
+        private System.Windows.Forms.Label lblWarping;
     }
 }

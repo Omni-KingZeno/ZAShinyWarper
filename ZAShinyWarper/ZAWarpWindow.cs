@@ -5,15 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using NHSE.Injection;
 using PKHeX.Core;
 using PKHeX.Drawing.PokeSprite;
-using PLAWarper;
+using ZAWarper.helpers;
 
-namespace PLADumper
+namespace ZAWarper
 {
     public partial class ZAWarpWindow : Form
     {
@@ -27,7 +26,7 @@ namespace PLADumper
         private ShinyHunter<PA9> shinyHunter = new();
         private readonly List<PictureBox> StashList;
 
-        private LabelForm lf = new();
+        private WarpProgressForm warpProgress = new();
 
         public ComboBox[] CBIVs = default!;
 
@@ -79,9 +78,9 @@ namespace PLADumper
             LoadAllAndUpdateUI();
         }
 
-        private ShinyHunter<PA9>.ShinyFilter<PA9> GetFilter()
+        private ShinyHunter<PA9>.ShinyFilter GetFilter()
         {
-            var filter = new ShinyHunter<PA9>.ShinyFilter<PA9>();
+            var filter = new ShinyHunter<PA9>.ShinyFilter();
             // Species - collect all checked species
             var checkedSpecies = new List<ushort>();
             for (int i = 0; i < cBSpecies.Items.Count; i++)
@@ -102,7 +101,7 @@ namespace PLADumper
             // IVs
             for (int i = 0; i < 6; i++)
             {
-                filter.IVs[i] = (IVType)CBIVs[i].SelectedItem;
+                filter.IVs[i] = (IVType)CBIVs[i].SelectedItem!;
             }
 
             // Size
@@ -238,6 +237,84 @@ namespace PLADumper
             }
         }
 
+        private void OnClickForwards(object sender, EventArgs e)
+        {
+            MovePlayer(0, 1);
+        }
+
+        private void OnClickBackwards(object sender, EventArgs e)
+        {
+            MovePlayer(0, -1);
+        }
+
+        private void OnClickLeft(object sender, EventArgs e)
+        {
+            MovePlayer(1, 0);
+        }
+
+        private void OnClickRight(object sender, EventArgs e)
+        {
+            MovePlayer(-1, 0);
+        }
+
+        private void OnClickSave(object sender, EventArgs e)
+        {
+            var pos = GetPlayerPosition();
+            positions.Add(pos);
+            SaveAllAndUpdateUI();
+
+            lBCoords.SelectedIndex = lBCoords.Items.Count - 1;
+        }
+
+        private async void OnClickRestore(object sender, EventArgs e)
+        {
+            if (lBCoords.SelectedIndex > -1 && lBCoords.SelectedItem != null)
+            {
+                SetWarpingEnableState(false); // Disable warping inputs
+
+                var toSend = (Vector3)lBCoords.SelectedItem;
+                SetPlayerPosition(toSend.X, toSend.Y, toSend.Z);
+
+                warpProgress.PerformSafely(() => warpProgress.Show());
+                await Task.Delay(250); // Let the form render correctly
+
+                for (int i = 0; i < 15; ++i)
+                {
+                    int currentAttempt = i + 1;
+                    if (GetPlayerPosition().Y == toSend.Y)
+                        break;
+
+                    if (i == 0)
+                        await Task.Delay(4000); // we might be falling, wait longer first attempt
+                    else
+                        warpProgress.PerformSafely(() => warpProgress.SetText($"Reattempting to Warp ({currentAttempt}/15) Please wait."));
+
+                    SetPlayerPosition(toSend.X, toSend.Y, toSend.Z);
+                    await Task.Delay(1100).ConfigureAwait(false);
+
+                    if (i == 14 && GetPlayerPosition().Y != toSend.Y)
+                    {
+                        warpProgress.PerformSafely(() => warpProgress.SetText("Warp failure. Please retry"));
+                        await Task.Delay(1000).ConfigureAwait(false);
+                    }
+                }
+
+                warpProgress.PerformSafely(() => warpProgress.Hide());
+                warpProgress.PerformSafely(() => warpProgress.SetText("Warping..."));                
+
+                SetWarpingEnableState(true); // Enable warping inputs
+            }
+        }
+
+        private void OnClickDelete(object sender, EventArgs e)
+        {
+            if (lBCoords.SelectedIndex > -1)
+            {
+                positions.RemoveAt(lBCoords.SelectedIndex);
+                SaveAllAndUpdateUI();
+            }
+        }
+
         private void MovePlayer(float x, float y)
         {
             int stepOffset = (int)nUDDistance.Value;
@@ -280,74 +357,6 @@ namespace PLADumper
         private ulong GetPlayerCoordinatesOffset()
         {
             return bot.FollowMainPointer(jumpsPos) + 0x90;
-        }
-
-        private void OnClickForwards(object sender, EventArgs e)
-        {
-            MovePlayer(0, 1);
-        }
-
-        private void OnClickBackwards(object sender, EventArgs e)
-        {
-            MovePlayer(0, -1);
-        }
-
-        private void OnClickLeft(object sender, EventArgs e)
-        {
-            MovePlayer(1, 0);
-        }
-
-        private void OnClickRight(object sender, EventArgs e)
-        {
-            MovePlayer(-1, 0);
-        }
-
-        private void OnClickSave(object sender, EventArgs e)
-        {
-            SaveNewValue();
-        }
-
-        private void SaveNewValue()
-        {
-            var pos = GetPlayerPosition();
-            positions.Add(pos);
-            SaveAllAndUpdateUI();
-
-            lBCoords.SelectedIndex = lBCoords.Items.Count - 1;
-        }
-
-        private async void OnClickRestore(object sender, EventArgs e)
-        {
-            if (lBCoords.SelectedIndex > -1)
-            {
-                var toSend = (Vector3)lBCoords.SelectedItem;
-                SetPlayerPosition(toSend.X, toSend.Y, toSend.Z);
-                Thread.Sleep(4000); // fall out
-
-                int i;
-                lf.PerformSafely(() => lf.SetText("Warping..."));
-                lf.PerformSafely(() => lf.Show());
-
-                for (i = 0; i < 15; ++i)
-                {
-                    lf.PerformSafely(() => lf.SetText($"Warping... ({i + 1}/15) Please wait."));
-                    if (GetPlayerPosition().Y == toSend.Y)
-                        break;
-                    SetPlayerPosition(toSend.X, toSend.Y, toSend.Z);
-                    await Task.Delay(1100).ConfigureAwait(false);
-                }
-
-                lf.PerformSafely(() => lf.Hide());
-            }
-        }
-
-        private void OnClickDelete(object sender, EventArgs e)
-        {
-            if (lBCoords.SelectedIndex > -1)
-            {
-                positions.RemoveAt(lBCoords.SelectedIndex);
-                SaveAllAndUpdateUI();
-            }
         }
 
         private void OnClickReset(object sender, EventArgs e)
@@ -489,6 +498,14 @@ namespace PLADumper
             gBControls.PerformSafely(() => gBControls.Enabled = enabled);
             btnResetSpecies.PerformSafely(() => btnResetSpecies.Enabled = enabled);
             nUDScaleMax.PerformSafely(() => nUDScaleMax.Enabled = enabled);
+        }
+
+        private void SetWarpingEnableState(bool enabled)
+        {
+            btnRestore.PerformSafely(() => btnRestore.Enabled = enabled);
+            btnSave.PerformSafely(() => btnSave.Enabled = enabled);
+            btnDelete.PerformSafely(() => btnDelete.Enabled = enabled);
+            btnWarp.PerformSafely(() => btnWarp.Enabled = enabled);
         }
 
         private void CleanUpBot()
@@ -758,24 +775,5 @@ namespace PLADumper
 
             return v;
         }
-    }
-
-    public class ProgramConfig
-    {
-        public string IPAddress { get; set; } = "192.168.0.1";
-        public List<Vector3> Positions { get; set; } = [];
-        public List<int> SpeciesIndices { get; set; } = [];
-        public decimal SpawnCheckTime { get; set; } = 2000;
-        public decimal CamMove { get; set; } = 16000;
-        public decimal SaveFreq { get; set; } = 3;
-        public decimal ScaleMin { get; set; } = 0;
-        public decimal ScaleMax { get; set; } = 255;
-        public int WhenShinyFound { get; set; } = 0;
-        public int IVHP { get; set; } = 0;
-        public int IVAtk { get; set; } = 0;
-        public int IVDef { get; set; } = 0;
-        public int IVSpA { get; set; } = 0;
-        public int IVSpD { get; set; } = 0;
-        public int IVSpe { get; set; } = 0;
     }
 }
