@@ -13,6 +13,7 @@ namespace ZAWarper
     public enum ShinyFoundAction
     {
         StopOnFound,
+        StopAtFullCache,
         CacheAndContinue
     }
 

@@ -430,7 +430,7 @@ namespace ZAWarper
                     if (File.Exists("positions.txt") || File.Exists("filter_config.txt"))
                         LegacyImport();
                     else
-                    return;
+                        return;
                 }
 
                 var json = File.ReadAllText(Config);
@@ -618,6 +618,19 @@ namespace ZAWarper
                                                          (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                     break;
 
+                                case ShinyFoundAction.StopAtFullCache:
+                                    if (shinyHunter.StashedShinies.Count == 10)
+                                    {
+                                        warping = false;
+                                        CleanUpBot();
+                                        bot.SendBytes(Encoding.ASCII.GetBytes("click X\r\n"));
+                                        btnWarp.PerformSafely(() => btnWarp.Text = "Start Warping");
+                                        SetFiltersEnableState(true);
+                                        MessageBox.Show($"A shiny matching the filter has been found after {currentWarps} attempts, and your stash is now full! Stopping warping.\r\n\r\n{pk}\r\n" +
+                                                             (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    }
+                                    break;
+
                                 case ShinyFoundAction.CacheAndContinue:
 
                                     if (cBWebhook.Checked)
@@ -625,15 +638,28 @@ namespace ZAWarper
                                     break;
                             }
                         }
-                        else // Notify the user anyway, but don't stop spawning/warping. The user should know that a shiny is found because it will occupy one of the shiny stash slots until it is removed
+                        else // Notify the user anyway, but don't stop spawning/warping
                         {
-                            CrossThreadExtensions.DoThreaded(() =>
+                            if (action == ShinyFoundAction.StopAtFullCache && shinyHunter.StashedShinies.Count == 10)
                             {
-                                MessageBox.Show($"The following shiny has been found, but does not match your filter. You may wish to remove it such that it doesn't occupy one of your shiny stash slots.\r\n\r\n{pk}\r\n" +
-                                                             (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found something we don't want!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                if (cBWebhook.Checked)
-                                    _ = SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
-                            });
+                                warping = false;
+                                CleanUpBot();
+                                bot.SendBytes(Encoding.ASCII.GetBytes("click X\r\n"));
+                                btnWarp.PerformSafely(() => btnWarp.Text = "Start Warping");
+                                SetFiltersEnableState(true);
+                                MessageBox.Show($"The following shiny has been found, but does not match your filter and your stash is now full! Stopping warping.\r\n\r\n{pk}\r\n" +
+                                                     (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                            else // Notify the user anyway, but don't stop spawning/warping. The user should know that a shiny is found because it will occupy one of the shiny stash slots until it is removed
+                            {
+                                CrossThreadExtensions.DoThreaded(() =>
+                                {
+                                    MessageBox.Show($"The following shiny has been found, but does not match your filter. You may wish to remove it such that it doesn't occupy one of your shiny stash slots.\r\n\r\n{pk}\r\n" +
+                                                 (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found something we don't want!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    if (cBWebhook.Checked)
+                                        _ = SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+                                });
+                            }
                         }
                     }
                 }
