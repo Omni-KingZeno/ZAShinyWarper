@@ -426,7 +426,12 @@ namespace ZAWarper
             try
             {
                 if (!File.Exists(Config))
+                {
+                    if (File.Exists("positions.txt") || File.Exists("filter_config.txt"))
+                        LegacyImport();
+                    else
                     return;
+                }
 
                 var json = File.ReadAllText(Config);
                 var config = JsonSerializer.Deserialize<ProgramConfig>(json);
@@ -777,6 +782,56 @@ namespace ZAWarper
             catch (HttpRequestException ex)
             {
                 MessageBox.Show($"Failed to send webhook: {ex.Message}");
+            }
+        }
+
+        private void LegacyImport()
+        {
+            try
+            {
+                const string legacyPositions = "positions.txt";
+                const string legacyFilter = "filter_config.txt";
+
+                if (File.Exists(legacyPositions))
+                {
+                    var lines = File.ReadAllLines(legacyPositions);
+                    foreach (var line in lines)
+                        positions.Add(Vector3.FromString(line));
+                }
+                
+                if (File.Exists(legacyFilter))
+                {
+                    var importedIndices = new List<int>();
+                    var lines = File.ReadAllLines(legacyFilter);
+                    foreach (var line in lines)
+                    {
+                        if (line.StartsWith("SpeciesIndices="))
+                        {
+                            var indicesStr = line["SpeciesIndices=".Length..];
+                            if (!string.IsNullOrEmpty(indicesStr))
+                            {
+                                importedIndices = [.. indicesStr.Split(',')
+                                    .Select(s => int.TryParse(s.Trim(), out int idx) ? idx : -1)
+                                    .Where(idx => idx >= 0)];
+                            }
+                            break;
+                        }
+                    }
+
+                    if (importedIndices.Count > 0)
+                    {
+                        for (int i = 0; i < cBSpecies.Items.Count; i++)
+                        {
+                            cBSpecies.SetItemChecked(i, importedIndices.Contains(i));
+                        }
+                    }
+                }
+
+                UpdateUI();
+            }
+            catch
+            {
+                // Silently fail if we can't import
             }
         }
     }
