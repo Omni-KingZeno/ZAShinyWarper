@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -138,7 +139,7 @@ namespace ZAWarper
                     SetUIEnableState(true, true);
                     shinyHunter.LoadStashedShinies(bot);
                     DisplayStashedShinies();
-                    MessageBox.Show($"Connected to SysBot (network). \r\n{shinyHunter.GetShinyStashInfo([.. shinyHunter.StashedShinies.Reverse()])}");
+                    DisplayStashedMessageBox(true);
                     bot.SendBytes(Encoding.ASCII.GetBytes("detachController\r\n"));
                     CleanUpBot();
                 }
@@ -176,7 +177,7 @@ namespace ZAWarper
                     SetUIEnableState(false, true);
                     shinyHunter.LoadStashedShinies(bot);
                     DisplayStashedShinies();
-                    MessageBox.Show($"Connected to UsbBot (USB). \r\n{shinyHunter.GetShinyStashInfo([.. shinyHunter.StashedShinies.Reverse()])}");
+                    DisplayStashedMessageBox(true);
                     bot.SendBytes(Encoding.ASCII.GetBytes("detachController\r\n"));
                     CleanUpBot();
                 }
@@ -185,6 +186,54 @@ namespace ZAWarper
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
+
+        private void DisplayStashedMessageBox(bool wifi)
+        {
+            var form = new Form
+            {
+                Text = "Connected",
+                Width = 250,
+                Height = 175,
+                StartPosition = FormStartPosition.CenterParent,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false,
+                ControlBox = false
+            };
+
+            var headerLabel = new Label
+            {
+                Text = $"SysBot Connected\r\n({(wifi ? "Network" : "USB")})",
+                Font = new Font("Segoe UI", 12),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Top,
+                Height = 65,
+                Padding = new Padding(10)
+            };
+            var count = shinyHunter.StashedShinies.Count;
+            var countLabel = new Label
+            {
+                Text = $"{(count == 0 ? "No Shinies found in your stash." : $"{count} Shin{(count == 1 ? "y" : "ies")} found in your stash!")}",
+                Font = new Font("Segoe UI", 10),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Fill
+            };
+
+            var okButton = new Button
+            {
+                Text = "OK",
+                Width = 80,
+                Height = 30,
+                Dock = DockStyle.Bottom,
+                Margin = new Padding(10)
+            };
+            okButton.Click += (s, e) => form.Close();
+
+            form.Controls.Add(countLabel);
+            form.Controls.Add(headerLabel);
+            form.Controls.Add(okButton);
+            form.ShowDialog();
         }
 
         private void OnClickScreenOn(object sender, EventArgs e)
@@ -865,7 +914,7 @@ namespace ZAWarper
                     foreach (var line in lines)
                         positions.Add(Vector3.FromString(line));
                 }
-                
+
                 if (File.Exists(legacyFilter))
                 {
                     var importedIndices = new List<int>();
