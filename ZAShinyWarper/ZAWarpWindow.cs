@@ -665,6 +665,9 @@ namespace ZAWarper
                                     SetFiltersEnableState(true);
                                     MessageBox.Show($"A shiny matching the filter has been found after {currentWarps} attempts! Stopping warping.\r\n\r\n{pk}\r\n" +
                                                          (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                                    if (cBWebhook.Checked)
+                                        await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                     break;
 
                                 case ShinyFoundAction.StopAtFullCache:
@@ -678,6 +681,9 @@ namespace ZAWarper
                                         MessageBox.Show($"A shiny matching the filter has been found after {currentWarps} attempts, and your stash is now full! Stopping warping.\r\n\r\n{pk}\r\n" +
                                                              (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                     }
+
+                                    if (cBWebhook.Checked)
+                                        await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                     break;
 
                                 case ShinyFoundAction.CacheAndContinue:
@@ -698,6 +704,9 @@ namespace ZAWarper
                                 SetFiltersEnableState(true);
                                 MessageBox.Show($"The following shiny has been found, but does not match your filter and your stash is now full! Stopping warping.\r\n\r\n{pk}\r\n" +
                                                      (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                                if (cBWebhook.Checked)
+                                    await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                             }
                             else // Notify the user anyway, but don't stop spawning/warping. The user should know that a shiny is found because it will occupy one of the shiny stash slots until it is removed
                             {
