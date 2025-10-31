@@ -801,7 +801,7 @@ namespace ZAWarper
             // 
             cBWebhook.AutoSize = true;
             cBWebhook.Enabled = false;
-            cBWebhook.Location = new Point(25, 134);
+            cBWebhook.Location = new Point(54, 124);
             cBWebhook.Name = "cBWebhook";
             cBWebhook.Size = new Size(15, 14);
             cBWebhook.TabIndex = 10;
@@ -811,10 +811,10 @@ namespace ZAWarper
             // tBWebhook
             // 
             tBWebhook.Enabled = false;
-            tBWebhook.Location = new Point(112, 130);
+            tBWebhook.Location = new Point(97, 130);
             tBWebhook.Name = "tBWebhook";
-            tBWebhook.PlaceholderText = "Webhook address";
-            tBWebhook.Size = new Size(205, 23);
+            tBWebhook.PlaceholderText = "Webhook address(s), comma separated";
+            tBWebhook.Size = new Size(220, 23);
             tBWebhook.TabIndex = 11;
             tBWebhook.TextChanged += OnConfigurationChange;
             // 
@@ -822,7 +822,7 @@ namespace ZAWarper
             // 
             lblSend.AutoSize = true;
             lblSend.Enabled = false;
-            lblSend.Location = new Point(43, 123);
+            lblSend.Location = new Point(15, 123);
             lblSend.Name = "lblSend";
             lblSend.Size = new Size(33, 15);
             lblSend.TabIndex = 12;
@@ -832,11 +832,11 @@ namespace ZAWarper
             // 
             lblWebhook.AutoSize = true;
             lblWebhook.Enabled = false;
-            lblWebhook.Location = new Point(43, 139);
+            lblWebhook.Location = new Point(15, 139);
             lblWebhook.Name = "lblWebhook";
-            lblWebhook.Size = new Size(63, 15);
+            lblWebhook.Size = new Size(76, 15);
             lblWebhook.TabIndex = 13;
-            lblWebhook.Text = "Webhook?";
+            lblWebhook.Text = "Webhook(s)?";
             // 
             // btnExport
             // 

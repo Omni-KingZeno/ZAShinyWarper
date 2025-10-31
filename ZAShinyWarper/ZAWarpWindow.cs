@@ -828,14 +828,27 @@ namespace ZAWarper
             };
 
             var json = JsonSerializer.Serialize(payload);
-            try
+            var webHooks = tBWebhook.Text.Split(',');
+            var failedPosts = new List<string>();
+            foreach (var hook in webHooks)
             {
-                var response = await httpClient.PostAsync(tBWebhook.Text, new StringContent(json, Encoding.UTF8, "application/json"));
-                response.EnsureSuccessStatusCode();
+                try
+                {
+                    var response = await httpClient.PostAsync(hook.Trim(), new StringContent(json, Encoding.UTF8, "application/json"));
+                    response.EnsureSuccessStatusCode();
+                }
+                catch (HttpRequestException ex)
+                {
+                    failedPosts.Add($"{hook}: {ex.Message}");
+                }
             }
-            catch (HttpRequestException ex)
+
+            if (failedPosts.Count > 0)
             {
-                MessageBox.Show($"Failed to send webhook: {ex.Message}");
+                MessageBox.Show($"Failed to send {failedPosts.Count} webhook(s):\n\n{string.Join("\n", failedPosts)}",
+                                "Webhook Error",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
             }
         }
 
