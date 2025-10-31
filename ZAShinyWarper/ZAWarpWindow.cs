@@ -693,7 +693,7 @@ namespace ZAWarper
                                     break;
                             }
                         }
-                        else // Notify the user anyway, but don't stop spawning/warping
+                        else // Notify the user their shiny cache is full
                         {
                             if (action == ShinyFoundAction.StopAtFullCache && shinyHunter.StashedShinies.Count == 10)
                             {
@@ -702,8 +702,7 @@ namespace ZAWarper
                                 bot.SendBytes(Encoding.ASCII.GetBytes("click X\r\n"));
                                 btnWarp.PerformSafely(() => btnWarp.Text = "Start Warping");
                                 SetFiltersEnableState(true);
-                                MessageBox.Show($"The following shiny has been found, but does not match your filter and your stash is now full! Stopping warping.\r\n\r\n{pk}\r\n" +
-                                                     (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                MessageBox.Show($"No shiny matching your filter was found.\r\n Your shiny cache is now full!\r\nStopping warping.", "Cache Full!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                                 if (cBWebhook.Checked)
                                     await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
