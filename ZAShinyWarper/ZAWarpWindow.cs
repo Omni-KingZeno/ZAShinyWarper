@@ -304,7 +304,11 @@ namespace ZAWarper
                 var toSend = (Vector3)lBCoords.SelectedItem;
                 SetPlayerPosition(toSend.X, toSend.Y, toSend.Z);
 
-                warpProgress.PerformSafely(() => warpProgress.Show());
+                warpProgress.PerformSafely(() =>
+                {
+                    CenterFormOnParent(warpProgress);
+                    warpProgress.Show();
+                });
                 await Task.Delay(250); // Let the form render correctly
 
                 for (int i = 0; i < 15; ++i)
@@ -333,6 +337,14 @@ namespace ZAWarper
 
                 SetWarpingEnableState(true); // Enable warping inputs
             }
+        }
+
+        private void CenterFormOnParent(Form childForm)
+        {
+            childForm.StartPosition = FormStartPosition.Manual;
+            int x = Location.X + (Width - childForm.Width) / 2;
+            int y = Location.Y + (Height - childForm.Height) / 2;
+            childForm.Location = new Point(x, y);
         }
 
         private void OnClickDelete(object sender, EventArgs e)

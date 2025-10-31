@@ -49,7 +49,7 @@
             Controls.Add(lblWarping);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             Name = "WarpProgressForm";
-            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             TopMost = true;
             ResumeLayout(false);
         }
