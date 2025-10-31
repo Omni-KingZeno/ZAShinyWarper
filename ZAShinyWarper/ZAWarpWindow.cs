@@ -136,7 +136,7 @@ namespace ZAWarper
                     bot = botsys;
 
                     SetUIEnableState(true, true);
-                    shinyHunter.LoadStashedShinies(bot, "sets.txt");
+                    shinyHunter.LoadStashedShinies(bot);
                     DisplayStashedShinies();
                     MessageBox.Show($"Connected to SysBot (network). \r\n{shinyHunter.GetShinyStashInfo([.. shinyHunter.StashedShinies.Reverse()])}");
                     bot.SendBytes(Encoding.ASCII.GetBytes("detachController\r\n"));
@@ -174,7 +174,7 @@ namespace ZAWarper
                     bot = botusb;
 
                     SetUIEnableState(false, true);
-                    shinyHunter.LoadStashedShinies(bot, "sets.txt");
+                    shinyHunter.LoadStashedShinies(bot);
                     DisplayStashedShinies();
                     MessageBox.Show($"Connected to UsbBot (USB). \r\n{shinyHunter.GetShinyStashInfo([.. shinyHunter.StashedShinies.Reverse()])}");
                     bot.SendBytes(Encoding.ASCII.GetBytes("detachController\r\n"));
@@ -485,6 +485,7 @@ namespace ZAWarper
             gBStashedShiny.Enabled = enabled;
             btnScreenOn.Enabled = enabled;
             btnScreenOff.Enabled = enabled;
+            btnExport.Enabled = enabled;
 
             if (wifi)
             {
@@ -584,7 +585,7 @@ namespace ZAWarper
                 bot.SendBytes(Encoding.ASCII.GetBytes($"setStick RIGHT {camSpeed} 0\r\n"));
 
             // Refresh stashed shinies
-            _ = shinyHunter.LoadStashedShinies(bot, "sets.txt");
+            _ = shinyHunter.LoadStashedShinies(bot);
             DisplayStashedShinies();
 
             while (warping)
@@ -594,7 +595,7 @@ namespace ZAWarper
                     await SaveGame().ConfigureAwait(false);
 
                 // Check shinies first as a new one may have spawned before we move
-                var newFound = shinyHunter.LoadStashedShinies(bot, "sets.txt");
+                var newFound = shinyHunter.LoadStashedShinies(bot);
                 if (newFound)
                 {
                     DisplayStashedShinies();
@@ -748,6 +749,33 @@ namespace ZAWarper
             for (int i = shinyHunter.StashedShinies.Count; i < 10; i++)
             {
                 StashList[i].PerformSafely(() => StashList[i].Image = null);
+            }
+        }
+
+        private void OnClickExport(object sender, EventArgs e)
+        {
+            if (shinyHunter.StashedShinies.Count == 0)
+            {
+                MessageBox.Show("Nothing to export",
+                                "Export",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                return;
+            }
+
+            var result = MessageBox.Show("Export the currently stashed shiny Pokémon to Showdown format?",
+                                         "Export Confirmation",
+                                         MessageBoxButtons.YesNo,
+                                         MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                var exportPath = Path.GetFullPath("Sets.txt");
+                File.WriteAllText(exportPath, shinyHunter.GetShinyStashInfo(shinyHunter.StashedShinies));
+                MessageBox.Show($"Export successful!\n\nSaved to:\n{exportPath}",
+                                "Export Complete",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
             }
         }
 

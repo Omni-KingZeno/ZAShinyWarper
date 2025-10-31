@@ -99,6 +99,7 @@ namespace ZAWarper
             tBWebhook = new TextBox();
             lblSend = new Label();
             lblWebhook = new Label();
+            btnExport = new Button();
             gBControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nUDDistance).BeginInit();
             gBShinyHunt.SuspendLayout();
@@ -837,11 +838,23 @@ namespace ZAWarper
             lblWebhook.TabIndex = 13;
             lblWebhook.Text = "Webhook?";
             // 
+            // btnExport
+            // 
+            btnExport.Enabled = false;
+            btnExport.Location = new Point(546, 557);
+            btnExport.Name = "btnExport";
+            btnExport.Size = new Size(212, 27);
+            btnExport.TabIndex = 14;
+            btnExport.Text = "Export Sets";
+            btnExport.UseVisualStyleBackColor = true;
+            btnExport.Click += OnClickExport;
+            // 
             // ZAWarpWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(770, 594);
+            Controls.Add(btnExport);
             Controls.Add(lblWebhook);
             Controls.Add(lblSend);
             Controls.Add(tBWebhook);
@@ -955,6 +968,7 @@ namespace ZAWarper
         private TextBox tBWebhook;
         private Label lblSend;
         private Label lblWebhook;
+        private Button btnExport;
     }
 }
 

@@ -143,11 +143,11 @@ namespace ZAWarper
         /// <param name="bot"></param>
         /// <param name="path"></param>
         /// <returns>whether or not a new one has entered since previous</returns>
-        public bool LoadStashedShinies(IRAMReadWriter bot, string path)
+        public bool LoadStashedShinies(IRAMReadWriter bot)
         {
             var offs = GetShinyStashOffset(bot);
             PreviousStashedShinies = StashedShinies;
-            StashedShinies = new List<StashedShiny>();
+            StashedShinies = [];
 
             if (!Directory.Exists(STASH_FOLDER))
                 Directory.CreateDirectory(STASH_FOLDER);
@@ -155,7 +155,7 @@ namespace ZAWarper
             for (int i = 0; i < STASHED_SHINIES_MAX; i++)
             {
                 var data = bot.ReadBytes(offs + (ulong)(i * PA9_BUFFER), PA9_SIZE + 8, RWMethod.Absolute);
-                var construct = typeof(T).GetConstructor(new Type[1] { typeof(Memory<byte>) });
+                var construct = typeof(T).GetConstructor([typeof(Memory<byte>)]);
                 Debug.Assert(construct != null, "PKM type must have a Memory<byte> constructor");
 
                 var pk = (T)construct.Invoke(new object[] { new Memory<byte>(data[8..]) });
@@ -172,9 +172,6 @@ namespace ZAWarper
                     }
                 }
             }
-
-            if (!string.IsNullOrEmpty(path))
-                File.WriteAllText(path, GetShinyStashInfo(StashedShinies));
 
             DifferentShinies = StashedShinies.Where(pk => !PreviousStashedShinies.Any(x => x.EncryptionConstant == pk.EncryptionConstant)).ToList();
             return DifferentShinies.Any();
