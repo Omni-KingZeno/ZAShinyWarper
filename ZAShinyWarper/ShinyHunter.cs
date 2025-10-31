@@ -110,7 +110,7 @@ namespace ZAWarper
             public string GetRollsInfo()
             {
                 if (Rolls.HasValue)
-                    return (Rolls.Value < 4 ? $"Rolls: {Rolls.Value} (Legit or unknown)" : $"Rolls: {Rolls.Value} (Mad haxx)") + $" Seed: {Seed:X16}";
+                    return (Rolls.Value < 4 ? $"Rolls: {Rolls.Value} (Legit?)" : $"Rolls: {Rolls.Value} (Mad haxx)") + $" Seed: {Seed:X16}";
                 else
                     return "Rolls: N/A";
             }

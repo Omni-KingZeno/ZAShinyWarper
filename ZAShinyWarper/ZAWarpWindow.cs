@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace ZAWarper
 
         private ShinyHunter<PA9> shinyHunter = new();
         private readonly List<PictureBox> StashList;
-
+        private readonly HttpClient httpClient = new();
         private WarpProgressForm warpProgress = new();
 
         public ComboBox[] CBIVs = default!;
@@ -121,16 +122,10 @@ namespace ZAWarper
                     btnWarp.Text = "Start Warping";
                 }
 
-                gBControls.Enabled = false;
-                gBShinyHunt.Enabled = false;
-                gBStashedShiny.Enabled = false;
-                btnScreenOn.Enabled = false;
-                btnScreenOff.Enabled = false;
+                SetUIEnableState(true, false);
                 CleanUpBot();
                 ResetSprites();
                 bot = default!;
-                btnConnect.Text = "Connect";
-                btnConnectUSB.Enabled = true;
             }
             else
             {
@@ -139,13 +134,8 @@ namespace ZAWarper
                     var botsys = new SysBot();
                     botsys.Connect(tB_IP.Text, 6000);
                     bot = botsys;
-                    btnConnect.Text = "Disconnect";
-                    btnConnectUSB.Enabled = false;
-                    gBControls.Enabled = true;
-                    gBShinyHunt.Enabled = true;
-                    gBStashedShiny.Enabled = true;
-                    btnScreenOn.Enabled = true;
-                    btnScreenOff.Enabled = true;
+
+                    SetUIEnableState(true, true);
                     shinyHunter.LoadStashedShinies(bot, "sets.txt");
                     DisplayStashedShinies();
                     MessageBox.Show($"Connected to SysBot (network). \r\n{shinyHunter.GetShinyStashInfo([.. shinyHunter.StashedShinies.Reverse()])}");
@@ -170,16 +160,10 @@ namespace ZAWarper
                     btnWarp.Text = "Start Warping";
                 }
 
-                gBControls.Enabled = false;
-                gBShinyHunt.Enabled = false;
-                gBStashedShiny.Enabled = false;
-                btnScreenOn.Enabled = false;
-                btnScreenOff.Enabled = false;
+                SetUIEnableState(false, false);
                 CleanUpBot();
                 ResetSprites();
                 bot = default!;
-                btnConnectUSB.Text = "ConnectUSB";
-                btnConnect.Enabled = true;
             }
             else
             {
@@ -188,12 +172,8 @@ namespace ZAWarper
                     var botusb = new USBBot();
                     botusb.Connect();
                     bot = botusb;
-                    btnConnectUSB.Text = "DisconnectUSB";
-                    btnConnect.Enabled = false;
-                    gBControls.Enabled = true;
-                    gBShinyHunt.Enabled = true;
-                    btnScreenOn.Enabled = true;
-                    btnScreenOff.Enabled = true;
+
+                    SetUIEnableState(false, true);
                     shinyHunter.LoadStashedShinies(bot, "sets.txt");
                     DisplayStashedShinies();
                     MessageBox.Show($"Connected to UsbBot (USB). \r\n{shinyHunter.GetShinyStashInfo([.. shinyHunter.StashedShinies.Reverse()])}");
@@ -281,7 +261,7 @@ namespace ZAWarper
                 for (int i = 0; i < 15; ++i)
                 {
                     int currentAttempt = i + 1;
-                    if (GetPlayerPosition().Y == toSend.Y)
+                    if (GetPlayerPosition().Y >= toSend.Y - 0.02f && GetPlayerPosition().Y <= toSend.Y + 0.02f)
                         break;
 
                     if (i == 0)
@@ -300,7 +280,7 @@ namespace ZAWarper
                 }
 
                 warpProgress.PerformSafely(() => warpProgress.Hide());
-                warpProgress.PerformSafely(() => warpProgress.SetText("Warping..."));                
+                warpProgress.PerformSafely(() => warpProgress.SetText("Warping..."));
 
                 SetWarpingEnableState(true); // Enable warping inputs
             }
@@ -406,6 +386,8 @@ namespace ZAWarper
                 {
                     // Control Settings
                     IPAddress = tB_IP.Text,
+                    Webhook = tBWebhook.Text,
+                    SendWebhook = cBWebhook.Checked,
                     Positions = [.. positions],
 
                     // Filter settings
@@ -465,6 +447,8 @@ namespace ZAWarper
                 }
 
                 tB_IP.Text = config.IPAddress;
+                tBWebhook.Text = config.Webhook;
+                cBWebhook.Checked = config.SendWebhook;
                 positions = [.. config.Positions];
                 nUDCheckTime.Value = config.SpawnCheckTime;
                 nUDCamMove.Value = config.CamMove;
@@ -485,6 +469,32 @@ namespace ZAWarper
             }
         }
 
+        private void SetUIEnableState(bool wifi, bool enabled)
+        {
+            cBWebhook.Enabled = enabled;
+            tBWebhook.Enabled = enabled;
+            lblSend.Enabled = enabled;
+            lblWebhook.Enabled = enabled;
+            gBControls.Enabled = enabled;
+            gBShinyHunt.Enabled = enabled;
+            gBStashedShiny.Enabled = enabled;
+            btnScreenOn.Enabled = enabled;
+            btnScreenOff.Enabled = enabled;
+
+            if (wifi)
+            {
+                btnConnect.Text = enabled ? "Disconnect" : "Connect";
+                btnConnect.Enabled = true;
+                btnConnectUSB.Enabled = !enabled;
+            }
+            else
+            {
+                btnConnectUSB.Text = enabled ? "Disconnect USB" : "Connect USB";
+                btnConnectUSB.Enabled = true;
+                btnConnect.Enabled = !enabled;
+            }
+        }
+
         private void SetFiltersEnableState(bool enabled)
         {
             cBSpecies.PerformSafely(() => cBSpecies.Enabled = enabled);
@@ -498,6 +508,7 @@ namespace ZAWarper
             gBControls.PerformSafely(() => gBControls.Enabled = enabled);
             btnResetSpecies.PerformSafely(() => btnResetSpecies.Enabled = enabled);
             nUDScaleMax.PerformSafely(() => nUDScaleMax.Enabled = enabled);
+
         }
 
         private void SetWarpingEnableState(bool enabled)
@@ -553,6 +564,7 @@ namespace ZAWarper
             var camSpeed = (int)nUDCamMove.Value;
             var action = (ShinyFoundAction)cBWhenShinyFound.SelectedItem!;
             var saveFrequency = (int)nUDSaveFreq.Value;
+            var strings = GameInfo.GetStrings("en");
 
             int shiniesFound = 0;
 
@@ -597,7 +609,13 @@ namespace ZAWarper
                                     btnWarp.PerformSafely(() => btnWarp.Text = "Start Warping");
                                     SetFiltersEnableState(true);
                                     MessageBox.Show($"A shiny matching the filter has been found after {currentWarps} attempts! Stopping warping.\r\n\r\n{pk}\r\n" +
-                                                         (pk.PKM.Scale == 255 ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                                         (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    break;
+
+                                case ShinyFoundAction.CacheAndContinue:
+
+                                    if (cBWebhook.Checked)
+                                        await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                     break;
                             }
                         }
@@ -606,7 +624,9 @@ namespace ZAWarper
                             CrossThreadExtensions.DoThreaded(() =>
                             {
                                 MessageBox.Show($"The following shiny has been found, but does not match your filter. You may wish to remove it such that it doesn't occupy one of your shiny stash slots.\r\n\r\n{pk}\r\n" +
-                                                             (pk.PKM.Scale == 255 ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found something we don't want!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                                             (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found something we don't want!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                if (cBWebhook.Checked)
+                                    _ = SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                             });
                         }
                     }
@@ -723,6 +743,40 @@ namespace ZAWarper
             for (int i = shinyHunter.StashedShinies.Count; i < 10; i++)
             {
                 StashList[i].PerformSafely(() => StashList[i].Image = null);
+            }
+        }
+
+        private async Task SendWebhook(string showdownSet, string species, string title)
+        {
+            if (string.IsNullOrWhiteSpace(tBWebhook.Text))
+            {
+                MessageBox.Show("Webhook URL is empty, cannot send shiny notification.");
+                return;
+            }
+
+            string imageUrl = $"https://raw.githubusercontent.com/plusReedy/Images-Sprites-Balls/main/Shiny/{species.ToLower()}.png";
+
+            var embed = new
+            {
+                title,
+                description = showdownSet,
+                image = new { url = imageUrl }
+            };
+
+            var payload = new
+            {
+                embeds = new[] { embed }
+            };
+
+            var json = JsonSerializer.Serialize(payload);
+            try
+            {
+                var response = await httpClient.PostAsync(tBWebhook.Text, new StringContent(json, Encoding.UTF8, "application/json"));
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException ex)
+            {
+                MessageBox.Show($"Failed to send webhook: {ex.Message}");
             }
         }
     }

@@ -41,7 +41,7 @@ namespace ZAWarper
             btnRestore = new Button();
             btnSave = new Button();
             lBCoords = new ListBox();
-            label2 = new Label();
+            lblFreeWarp = new Label();
             nUDDistance = new NumericUpDown();
             btnLeft = new Button();
             btnRight = new Button();
@@ -95,6 +95,10 @@ namespace ZAWarper
             btnScreenOn = new Button();
             btnScreenOff = new Button();
             ShinyInfo = new ToolTip(components);
+            cBWebhook = new CheckBox();
+            tBWebhook = new TextBox();
+            lblSend = new Label();
+            lblWebhook = new Label();
             gBControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nUDDistance).BeginInit();
             gBShinyHunt.SuspendLayout();
@@ -141,44 +145,11 @@ namespace ZAWarper
             btnConnect.Location = new Point(14, 42);
             btnConnect.Margin = new Padding(4, 3, 4, 3);
             btnConnect.Name = "btnConnect";
-            btnConnect.Size = new Size(304, 32);
+            btnConnect.Size = new Size(148, 36);
             btnConnect.TabIndex = 2;
             btnConnect.Text = "Connect";
             btnConnect.UseVisualStyleBackColor = true;
             btnConnect.Click += OnClickConnect;
-            // 
-            // btnConnectUSB
-            // 
-            btnConnectUSB.Location = new Point(14, 82);
-            btnConnectUSB.Margin = new Padding(4, 3, 4, 3);
-            btnConnectUSB.Name = "btnConnectUSB";
-            btnConnectUSB.Size = new Size(304, 36);
-            btnConnectUSB.TabIndex = 5;
-            btnConnectUSB.Text = "ConnectUSB";
-            btnConnectUSB.UseVisualStyleBackColor = true;
-            btnConnectUSB.Click += OnClickConnectUSB;
-            // 
-            // btnScreenOn
-            // 
-            btnScreenOn.Enabled = false;
-            btnScreenOn.Location = new Point(15, 124);
-            btnScreenOn.Name = "btnScreenOn";
-            btnScreenOn.Size = new Size(148, 36);
-            btnScreenOn.TabIndex = 8;
-            btnScreenOn.Text = "Screen On";
-            btnScreenOn.UseVisualStyleBackColor = true;
-            btnScreenOn.Click += OnClickScreenOn;
-            // 
-            // btnScreenOff
-            // 
-            btnScreenOff.Enabled = false;
-            btnScreenOff.Location = new Point(170, 124);
-            btnScreenOff.Name = "btnScreenOff";
-            btnScreenOff.Size = new Size(148, 36);
-            btnScreenOff.TabIndex = 9;
-            btnScreenOff.Text = "Screen Off";
-            btnScreenOff.UseVisualStyleBackColor = true;
-            btnScreenOff.Click += OnClickScreenOff;
             // 
             // gBControls
             // 
@@ -186,7 +157,7 @@ namespace ZAWarper
             gBControls.Controls.Add(btnRestore);
             gBControls.Controls.Add(btnSave);
             gBControls.Controls.Add(lBCoords);
-            gBControls.Controls.Add(label2);
+            gBControls.Controls.Add(lblFreeWarp);
             gBControls.Controls.Add(nUDDistance);
             gBControls.Controls.Add(btnLeft);
             gBControls.Controls.Add(btnRight);
@@ -201,15 +172,6 @@ namespace ZAWarper
             gBControls.TabIndex = 3;
             gBControls.TabStop = false;
             gBControls.Text = "Editing";
-            // 
-            // lBCoords
-            // 
-            lBCoords.FormattingEnabled = true;
-            lBCoords.Location = new Point(10, 22);
-            lBCoords.Margin = new Padding(4, 3, 4, 3);
-            lBCoords.Name = "lBCoords";
-            lBCoords.Size = new Size(285, 139);
-            lBCoords.TabIndex = 14;
             // 
             // btnDelete
             // 
@@ -244,15 +206,33 @@ namespace ZAWarper
             btnSave.UseVisualStyleBackColor = true;
             btnSave.Click += OnClickSave;
             // 
-            // label2
+            // lBCoords
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(12, 251);
-            label2.Margin = new Padding(4, 0, 4, 0);
-            label2.Name = "label2";
-            label2.Size = new Size(61, 15);
-            label2.TabIndex = 13;
-            label2.Text = "Free warp:";
+            lBCoords.FormattingEnabled = true;
+            lBCoords.Location = new Point(10, 22);
+            lBCoords.Margin = new Padding(4, 3, 4, 3);
+            lBCoords.Name = "lBCoords";
+            lBCoords.Size = new Size(285, 139);
+            lBCoords.TabIndex = 14;
+            // 
+            // lblFreeWarp
+            // 
+            lblFreeWarp.AutoSize = true;
+            lblFreeWarp.Location = new Point(12, 251);
+            lblFreeWarp.Margin = new Padding(4, 0, 4, 0);
+            lblFreeWarp.Name = "lblFreeWarp";
+            lblFreeWarp.Size = new Size(61, 15);
+            lblFreeWarp.TabIndex = 13;
+            lblFreeWarp.Text = "Free warp:";
+            // 
+            // nUDDistance
+            // 
+            nUDDistance.Location = new Point(216, 343);
+            nUDDistance.Margin = new Padding(4, 3, 4, 3);
+            nUDDistance.Name = "nUDDistance";
+            nUDDistance.Size = new Size(76, 23);
+            nUDDistance.TabIndex = 12;
+            nUDDistance.Value = new decimal(new int[] { 3, 0, 0, 0 });
             // 
             // btnLeft
             // 
@@ -298,15 +278,6 @@ namespace ZAWarper
             btnForw.UseVisualStyleBackColor = true;
             btnForw.Click += OnClickForwards;
             // 
-            // nUDDistance
-            // 
-            nUDDistance.Location = new Point(216, 343);
-            nUDDistance.Margin = new Padding(4, 3, 4, 3);
-            nUDDistance.Name = "nUDDistance";
-            nUDDistance.Size = new Size(76, 23);
-            nUDDistance.TabIndex = 12;
-            nUDDistance.Value = new decimal(new int[] { 3, 0, 0, 0 });
-            // 
             // lblThanks
             // 
             lblThanks.AutoSize = true;
@@ -317,6 +288,17 @@ namespace ZAWarper
             lblThanks.TabIndex = 4;
             lblThanks.Text = "Many thanks to Kurt for PKHeX and\r\nAnubis for the Z-A shiny stash research.";
             lblThanks.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // btnConnectUSB
+            // 
+            btnConnectUSB.Location = new Point(170, 42);
+            btnConnectUSB.Margin = new Padding(4, 3, 4, 3);
+            btnConnectUSB.Name = "btnConnectUSB";
+            btnConnectUSB.Size = new Size(148, 36);
+            btnConnectUSB.TabIndex = 5;
+            btnConnectUSB.Text = "ConnectUSB";
+            btnConnectUSB.UseVisualStyleBackColor = true;
+            btnConnectUSB.Click += OnClickConnectUSB;
             // 
             // gBShinyHunt
             // 
@@ -786,17 +768,84 @@ namespace ZAWarper
             StashedShiny10.TabStop = false;
             StashedShiny10.MouseEnter += OnMouseHover;
             // 
+            // btnScreenOn
+            // 
+            btnScreenOn.Enabled = false;
+            btnScreenOn.Location = new Point(15, 84);
+            btnScreenOn.Name = "btnScreenOn";
+            btnScreenOn.Size = new Size(148, 36);
+            btnScreenOn.TabIndex = 8;
+            btnScreenOn.Text = "Screen On";
+            btnScreenOn.UseVisualStyleBackColor = true;
+            btnScreenOn.Click += OnClickScreenOn;
+            // 
+            // btnScreenOff
+            // 
+            btnScreenOff.Enabled = false;
+            btnScreenOff.Location = new Point(169, 84);
+            btnScreenOff.Name = "btnScreenOff";
+            btnScreenOff.Size = new Size(148, 36);
+            btnScreenOff.TabIndex = 9;
+            btnScreenOff.Text = "Screen Off";
+            btnScreenOff.UseVisualStyleBackColor = true;
+            btnScreenOff.Click += OnClickScreenOff;
+            // 
             // ShinyInfo
             // 
             ShinyInfo.AutoPopDelay = 30000;
             ShinyInfo.InitialDelay = 750;
             ShinyInfo.ReshowDelay = 1000;
             // 
+            // cBWebhook
+            // 
+            cBWebhook.AutoSize = true;
+            cBWebhook.Enabled = false;
+            cBWebhook.Location = new Point(25, 134);
+            cBWebhook.Name = "cBWebhook";
+            cBWebhook.Size = new Size(15, 14);
+            cBWebhook.TabIndex = 10;
+            cBWebhook.UseVisualStyleBackColor = true;
+            cBWebhook.CheckStateChanged += OnConfigurationChange;
+            // 
+            // tBWebhook
+            // 
+            tBWebhook.Enabled = false;
+            tBWebhook.Location = new Point(112, 130);
+            tBWebhook.Name = "tBWebhook";
+            tBWebhook.PlaceholderText = "Webhook address";
+            tBWebhook.Size = new Size(205, 23);
+            tBWebhook.TabIndex = 11;
+            tBWebhook.TextChanged += OnConfigurationChange;
+            // 
+            // lblSend
+            // 
+            lblSend.AutoSize = true;
+            lblSend.Enabled = false;
+            lblSend.Location = new Point(43, 123);
+            lblSend.Name = "lblSend";
+            lblSend.Size = new Size(33, 15);
+            lblSend.TabIndex = 12;
+            lblSend.Text = "Send";
+            // 
+            // lblWebhook
+            // 
+            lblWebhook.AutoSize = true;
+            lblWebhook.Enabled = false;
+            lblWebhook.Location = new Point(43, 139);
+            lblWebhook.Name = "lblWebhook";
+            lblWebhook.Size = new Size(63, 15);
+            lblWebhook.TabIndex = 13;
+            lblWebhook.Text = "Webhook?";
+            // 
             // ZAWarpWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(770, 594);
+            Controls.Add(lblWebhook);
+            Controls.Add(lblSend);
+            Controls.Add(tBWebhook);
+            Controls.Add(cBWebhook);
             Controls.Add(btnScreenOff);
             Controls.Add(btnScreenOn);
             Controls.Add(gBStashedShiny);
@@ -851,7 +900,7 @@ namespace ZAWarper
         private System.Windows.Forms.Button btnBack;
         private System.Windows.Forms.Button btnForw;
         private System.Windows.Forms.NumericUpDown nUDDistance;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblFreeWarp;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnRestore;
         private System.Windows.Forms.Button btnSave;
@@ -902,6 +951,10 @@ namespace ZAWarper
         private Button btnScreenOn;
         private Button btnScreenOff;
         private ToolTip ShinyInfo;
+        private CheckBox cBWebhook;
+        private TextBox tBWebhook;
+        private Label lblSend;
+        private Label lblWebhook;
     }
 }
 
