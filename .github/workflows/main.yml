@@ -1,0 +1,81 @@
+name: .NET Desktop
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    strategy:
+      matrix:
+        configuration: [Release]
+    runs-on: windows-latest
+    
+    env:
+      SOLUTION: ZAShinyWarper.sln
+      BUILD_PLATFORM: Any CPU
+      BUILD_CONFIGURATION: Release
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET 9.0
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+    
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v2
+      with:
+        nuget-version: '>=6.4.0'
+    
+    - name: Restore NuGet packages
+      run: nuget restore ${{ env.SOLUTION }}
+    
+    - name: Clone PKHeX repository
+      run: |
+        git clone -q --depth=5 --branch=master https://github.com/kwsch/PKHeX.git ${{ github.workspace }}/PKHeX
+    
+    - name: Restore PKHeX NuGet packages
+      run: nuget restore ${{ github.workspace }}/PKHeX/PKHeX.sln -NoCache
+    
+    - name: Build PKHeX.Core
+      run: |
+        msbuild ${{ github.workspace }}/PKHeX/PKHeX.Core/PKHeX.Core.csproj `
+          /p:Configuration=${{ env.BUILD_CONFIGURATION }} `
+          /p:Platform="${{ env.BUILD_PLATFORM }}" `
+          /fl /flp:logfile=msbuild.log
+    
+    - name: Copy PKHeX.Core DLL to NuGet cache
+      shell: pwsh
+      run: |
+        $nugetver = (Get-ChildItem "$env:USERPROFILE/.nuget/packages/pkhex.core" | Sort-Object -Property LastWriteTime -Descending)[0].Name
+        Copy-Item "${{ github.workspace }}\pkhex\PKHeX.Core\bin\Any CPU\Release\net9.0\PKHeX.Core.dll" "$env:USERPROFILE\.nuget\packages\pkhex.core\$nugetver\lib\net9.0"
+    
+    - name: Build application
+      run: >
+        dotnet publish ZAShinyWarper\ZAShinyWarper.csproj
+        --configuration Release
+        --runtime win-x64
+        --self-contained false
+        /p:PublishSingleFile=true
+        /p:IncludeAllContentForSelfExtract=true
+        /p:PublishTrimmed=false
+        /p:DebugType=portable
+        /p:OutputPath=bin\Release\net9.0-windows\
+    
+    - name: Prepare artifacts
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\bin"
+        Copy-Item "${{ github.workspace }}\ZAShinyWarper\bin\Release\net9.0-windows\publish\ZAShinyWarper.exe" `
+          -Destination "${{ github.workspace }}\bin\" -Force
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ZAShinyWarper
+        path: bin/
