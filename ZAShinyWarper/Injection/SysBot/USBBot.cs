@@ -22,13 +22,13 @@ namespace NHSE.Injection
             lock (_sync)
             {
                 // Find and open the usb device.
-                //SwDevice = UsbDevice.OpenUsbDevice(SwFinder);
+                // SwDevice = UsbDevice.OpenUsbDevice(SwFinder);
                 foreach (UsbRegistry ur in UsbDevice.AllDevices)
                 {
                     if (ur.Vid == 1406 && ur.Pid == 12288)
                         SwDevice = ur.Device;
                 }
-                //SwDevice = UsbDevice.OpenUsbDevice(MyUsbFinder);
+                // SwDevice = UsbDevice.OpenUsbDevice(MyUsbFinder);
 
                 // If the device is open and ready
                 if (SwDevice == null)
@@ -95,13 +95,13 @@ namespace NHSE.Injection
         {
             byte[] sizeOfReturn = new byte[4];
 
-            //read size, no error checking as of yet, should be the required 368 bytes
+            // read size, no error checking as of yet, should be the required 368 bytes
             if (reader == null)
                 throw new Exception("USB writer is null, you may have disconnected the device during previous function");
 
             reader.Read(sizeOfReturn, 5000, out _);
 
-            //read stack
+            // read stack
             reader.Read(buffer, 5000, out var lenVal);
             return lenVal;
         }
@@ -149,7 +149,7 @@ namespace NHSE.Injection
 
                 var buffer = new byte[length];
                 var _ = ReadInternal(buffer);
-                //return Decoder.ConvertHexByteStringToBytes(buffer);
+                // return Decoder.ConvertHexByteStringToBytes(buffer);
                 return buffer;
             }
         }

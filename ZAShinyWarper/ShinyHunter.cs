@@ -41,6 +41,8 @@ namespace ZAWarper
             public byte SizeMinimum { get; set; } = 0;
             public byte SizeMaximum { get; set; } = 0;
 
+            public bool IsAlpha { get; set; }
+
             public ShinyFilter()
             {
 
@@ -84,6 +86,12 @@ namespace ZAWarper
                     if (pks.Scale < SizeMinimum)
                         return false;
                     if (pks.Scale > SizeMaximum)
+                        return false;
+                }
+                // Alpha
+                if (pk is IAlpha pka) // Even if scale is 255, Still needs alpha flag
+                {
+                    if (IsAlpha && !pka.IsAlpha)
                         return false;
                 }
                 return true;

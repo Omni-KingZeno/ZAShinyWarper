@@ -14,6 +14,7 @@ namespace ZAWarper
         public decimal ScaleMin { get; set; } = 0;
         public decimal ScaleMax { get; set; } = 255;
         public int WhenShinyFound { get; set; } = 0;
+        public bool IsAlpha { get; set; } = false;
         public int IVHP { get; set; } = 0;
         public int IVAtk { get; set; } = 0;
         public int IVDef { get; set; } = 0;

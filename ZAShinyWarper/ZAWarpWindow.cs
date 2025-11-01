@@ -111,6 +111,8 @@ namespace ZAWarper
             // Size
             filter.SizeMinimum = (byte)nUDScaleMin.Value;
             filter.SizeMaximum = (byte)nUDScaleMax.Value;
+            // Alpha
+            filter.IsAlpha = cBIsAlpha.Checked;
             return filter;
         }
 
@@ -458,6 +460,24 @@ namespace ZAWarper
             BeginInvoke(new Action(() => SaveConfig()));
         }
 
+        private void OnAlphaCheckedChanged(object sender, EventArgs e)
+        {
+            if (cBIsAlpha.Checked)
+            {
+                nUDScaleMin.Value = 255;
+                nUDScaleMin.Enabled = false;
+                nUDScaleMax.Value = 255;
+                nUDScaleMax.Enabled = false;
+            }
+            else
+            {
+                nUDScaleMin.Enabled = true;
+                nUDScaleMin.Value = 0;
+                nUDScaleMax.Enabled = true;
+                nUDScaleMax.Value = 255;
+            }
+        }
+
         private void SaveConfig()
         {
             try
@@ -474,6 +494,7 @@ namespace ZAWarper
                 programConfig.IVSpA = cBIVSpA.SelectedIndex;
                 programConfig.IVSpD = cBIVSpD.SelectedIndex;
                 programConfig.IVSpe = cBIVSpe.SelectedIndex;
+                programConfig.IsAlpha = cBIsAlpha.Checked;
                 programConfig.ScaleMin = nUDScaleMin.Value;
                 programConfig.ScaleMax = nUDScaleMax.Value;
 
@@ -513,7 +534,7 @@ namespace ZAWarper
                 if (config == null)
                     return;
 
-                programConfig = config; 
+                programConfig = config;
 
                 // Load all filter settings
                 for (int i = 0; i < cBSpecies.Items.Count; i++)
@@ -529,18 +550,19 @@ namespace ZAWarper
 
                 tB_IP.Text = programConfig.IPAddress;
                 positions = [.. programConfig.Positions];
+                cBWhenShinyFound.SelectedIndex = programConfig.WhenShinyFound;
                 nUDCheckTime.Value = programConfig.SpawnCheckTime;
                 nUDCamMove.Value = programConfig.CamMove;
                 nUDSaveFreq.Value = programConfig.SaveFreq;
-                nUDScaleMin.Value = programConfig.ScaleMin;
-                nUDScaleMax.Value = programConfig.ScaleMax;
-                cBWhenShinyFound.SelectedIndex = programConfig.WhenShinyFound;
                 cBIVHP.SelectedIndex = programConfig.IVHP;
                 cBIVAtk.SelectedIndex = programConfig.IVAtk;
                 cBIVDef.SelectedIndex = programConfig.IVDef;
                 cBIVSpA.SelectedIndex = programConfig.IVSpA;
                 cBIVSpD.SelectedIndex = programConfig.IVSpD;
                 cBIVSpe.SelectedIndex = programConfig.IVSpe;
+                nUDScaleMin.Value = programConfig.ScaleMin;
+                nUDScaleMax.Value = programConfig.ScaleMax;
+                cBIsAlpha.Checked = programConfig.IsAlpha;
             }
             catch
             {
@@ -579,13 +601,13 @@ namespace ZAWarper
             cBSpecies.PerformSafely(() => cBSpecies.Enabled = enabled);
             foreach (var cb in CBIVs)
                 cb.PerformSafely(() => cb.Enabled = enabled);
-            nUDScaleMin.PerformSafely(() => nUDScaleMin.Enabled = enabled);
-            nUDCheckTime.PerformSafely(() => nUDCheckTime.Enabled = enabled);
             cBWhenShinyFound.PerformSafely(() => cBWhenShinyFound.Enabled = enabled);
             nUDCamMove.PerformSafely(() => nUDCamMove.Enabled = enabled);
             nUDSaveFreq.PerformSafely(() => nUDSaveFreq.Enabled = enabled);
             gBControls.PerformSafely(() => gBControls.Enabled = enabled);
             btnResetSpecies.PerformSafely(() => btnResetSpecies.Enabled = enabled);
+            cBIsAlpha.PerformSafely(() => cBIsAlpha.Enabled = enabled);
+            nUDScaleMin.PerformSafely(() => nUDScaleMin.Enabled = enabled);
             nUDScaleMax.PerformSafely(() => nUDScaleMax.Enabled = enabled);
             btnResetFilters.PerformSafely(() => btnResetFilters.Enabled = enabled);
         }
@@ -690,8 +712,7 @@ namespace ZAWarper
                                     MessageBox.Show($"A shiny matching the filter has been found after {currentWarps} attempts! Stopping warping.\r\n\r\n{pk}\r\n" +
                                                          (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                                    //if (cBWebhook.Checked)
-                                        await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+                                    await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                     break;
 
                                 case ShinyFoundAction.StopAtFullCache:
@@ -706,14 +727,11 @@ namespace ZAWarper
                                                              (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                     }
 
-                                    //if (cBWebhook.Checked)
-                                        await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+                                    await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                     break;
 
                                 case ShinyFoundAction.CacheAndContinue:
-
-                                    //if (cBWebhook.Checked)
-                                        await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+                                    await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                     break;
                             }
                         }
@@ -728,8 +746,7 @@ namespace ZAWarper
                                 SetFiltersEnableState(true);
                                 MessageBox.Show($"No shiny matching your filter was found.\r\n Your shiny cache is now full!\r\nStopping warping.", "Cache Full!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                                //if (cBWebhook.Checked)
-                                    await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+                                await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                             }
                             else // Notify the user anyway, but don't stop spawning/warping. The user should know that a shiny is found because it will occupy one of the shiny stash slots until it is removed
                             {
@@ -737,8 +754,8 @@ namespace ZAWarper
                                 {
                                     MessageBox.Show($"The following shiny has been found, but does not match your filter. You may wish to remove it such that it doesn't occupy one of your shiny stash slots.\r\n\r\n{pk}\r\n" +
                                                  (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found something we don't want!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    //if (cBWebhook.Checked)
-                                        _ = SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+
+                                    _ = SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                 });
                             }
                         }

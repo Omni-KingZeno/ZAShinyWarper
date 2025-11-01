@@ -50,6 +50,8 @@ namespace ZAWarper
             lblThanks = new Label();
             btnConnectUSB = new Button();
             gBShinyHunt = new GroupBox();
+            cBIsAlpha = new CheckBox();
+            pBAlpha = new PictureBox();
             btnResetFilters = new Button();
             nUDSaveFreq = new NumericUpDown();
             lblSaveFreq = new Label();
@@ -100,6 +102,7 @@ namespace ZAWarper
             gBControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nUDDistance).BeginInit();
             gBShinyHunt.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pBAlpha).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nUDSaveFreq).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nUDCamMove).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nUDCheckTime).BeginInit();
@@ -300,6 +303,8 @@ namespace ZAWarper
             // 
             // gBShinyHunt
             // 
+            gBShinyHunt.Controls.Add(cBIsAlpha);
+            gBShinyHunt.Controls.Add(pBAlpha);
             gBShinyHunt.Controls.Add(btnResetFilters);
             gBShinyHunt.Controls.Add(nUDSaveFreq);
             gBShinyHunt.Controls.Add(lblSaveFreq);
@@ -340,10 +345,32 @@ namespace ZAWarper
             gBShinyHunt.TabStop = false;
             gBShinyHunt.Text = "Shiny Hunting";
             // 
+            // cBIsAlpha
+            // 
+            cBIsAlpha.AutoSize = true;
+            cBIsAlpha.Location = new Point(51, 493);
+            cBIsAlpha.Name = "cBIsAlpha";
+            cBIsAlpha.Size = new Size(15, 14);
+            cBIsAlpha.TabIndex = 32;
+            cBIsAlpha.UseVisualStyleBackColor = true;
+            cBIsAlpha.CheckedChanged += OnAlphaCheckedChanged;
+            cBIsAlpha.CheckedChanged += OnConfigurationChange;
+            // 
+            // pBAlpha
+            // 
+            pBAlpha.BackgroundImageLayout = ImageLayout.None;
+            pBAlpha.Image = ZAShinyWarper.Properties.Resources.alpha;
+            pBAlpha.Location = new Point(14, 481);
+            pBAlpha.Name = "pBAlpha";
+            pBAlpha.Size = new Size(31, 32);
+            pBAlpha.SizeMode = PictureBoxSizeMode.StretchImage;
+            pBAlpha.TabIndex = 31;
+            pBAlpha.TabStop = false;
+            // 
             // btnResetFilters
             // 
             btnResetFilters.Enabled = false;
-            btnResetFilters.Location = new Point(10, 534);
+            btnResetFilters.Location = new Point(14, 533);
             btnResetFilters.Name = "btnResetFilters";
             btnResetFilters.Size = new Size(184, 27);
             btnResetFilters.TabIndex = 30;
@@ -414,19 +441,19 @@ namespace ZAWarper
             // 
             // nUDScaleMin
             // 
-            nUDScaleMin.Location = new Point(74, 476);
+            nUDScaleMin.Location = new Point(140, 474);
             nUDScaleMin.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             nUDScaleMin.Name = "nUDScaleMin";
-            nUDScaleMin.Size = new Size(117, 23);
+            nUDScaleMin.Size = new Size(57, 23);
             nUDScaleMin.TabIndex = 22;
             nUDScaleMin.ValueChanged += OnConfigurationChange;
             // 
             // nUDScaleMax
             // 
-            nUDScaleMax.Location = new Point(74, 503);
+            nUDScaleMax.Location = new Point(140, 501);
             nUDScaleMax.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             nUDScaleMax.Name = "nUDScaleMax";
-            nUDScaleMax.Size = new Size(117, 23);
+            nUDScaleMax.Size = new Size(57, 23);
             nUDScaleMax.TabIndex = 22;
             nUDScaleMax.Value = new decimal(new int[] { 255, 0, 0, 0 });
             nUDScaleMax.ValueChanged += OnConfigurationChange;
@@ -434,7 +461,7 @@ namespace ZAWarper
             // lblScaleMin
             // 
             lblScaleMin.AutoSize = true;
-            lblScaleMin.Location = new Point(8, 478);
+            lblScaleMin.Location = new Point(72, 480);
             lblScaleMin.Name = "lblScaleMin";
             lblScaleMin.Size = new Size(60, 15);
             lblScaleMin.TabIndex = 21;
@@ -443,7 +470,7 @@ namespace ZAWarper
             // lblScaleMax
             // 
             lblScaleMax.AutoSize = true;
-            lblScaleMax.Location = new Point(8, 506);
+            lblScaleMax.Location = new Point(72, 503);
             lblScaleMax.Name = "lblScaleMax";
             lblScaleMax.Size = new Size(62, 15);
             lblScaleMax.TabIndex = 21;
@@ -452,7 +479,7 @@ namespace ZAWarper
             // lblIVSpe
             // 
             lblIVSpe.AutoSize = true;
-            lblIVSpe.Location = new Point(134, 432);
+            lblIVSpe.Location = new Point(140, 430);
             lblIVSpe.Name = "lblIVSpe";
             lblIVSpe.Size = new Size(26, 15);
             lblIVSpe.TabIndex = 19;
@@ -461,7 +488,7 @@ namespace ZAWarper
             // lblIVSpD
             // 
             lblIVSpD.AutoSize = true;
-            lblIVSpD.Location = new Point(71, 432);
+            lblIVSpD.Location = new Point(77, 430);
             lblIVSpD.Name = "lblIVSpD";
             lblIVSpD.Size = new Size(28, 15);
             lblIVSpD.TabIndex = 18;
@@ -470,7 +497,7 @@ namespace ZAWarper
             // lblIVSpA
             // 
             lblIVSpA.AutoSize = true;
-            lblIVSpA.Location = new Point(8, 432);
+            lblIVSpA.Location = new Point(14, 430);
             lblIVSpA.Name = "lblIVSpA";
             lblIVSpA.Size = new Size(28, 15);
             lblIVSpA.TabIndex = 17;
@@ -479,7 +506,7 @@ namespace ZAWarper
             // cBIVSpe
             // 
             cBIVSpe.FormattingEnabled = true;
-            cBIVSpe.Location = new Point(134, 450);
+            cBIVSpe.Location = new Point(140, 448);
             cBIVSpe.Name = "cBIVSpe";
             cBIVSpe.Size = new Size(57, 23);
             cBIVSpe.TabIndex = 16;
@@ -487,7 +514,7 @@ namespace ZAWarper
             // cBIVSpD
             // 
             cBIVSpD.FormattingEnabled = true;
-            cBIVSpD.Location = new Point(71, 450);
+            cBIVSpD.Location = new Point(77, 448);
             cBIVSpD.Name = "cBIVSpD";
             cBIVSpD.Size = new Size(57, 23);
             cBIVSpD.TabIndex = 15;
@@ -496,7 +523,7 @@ namespace ZAWarper
             // cBIVSpA
             // 
             cBIVSpA.FormattingEnabled = true;
-            cBIVSpA.Location = new Point(8, 450);
+            cBIVSpA.Location = new Point(14, 448);
             cBIVSpA.Name = "cBIVSpA";
             cBIVSpA.Size = new Size(57, 23);
             cBIVSpA.TabIndex = 14;
@@ -505,7 +532,7 @@ namespace ZAWarper
             // lblIVDef
             // 
             lblIVDef.AutoSize = true;
-            lblIVDef.Location = new Point(134, 380);
+            lblIVDef.Location = new Point(140, 378);
             lblIVDef.Name = "lblIVDef";
             lblIVDef.Size = new Size(25, 15);
             lblIVDef.TabIndex = 13;
@@ -514,7 +541,7 @@ namespace ZAWarper
             // lblIVAtk
             // 
             lblIVAtk.AutoSize = true;
-            lblIVAtk.Location = new Point(71, 380);
+            lblIVAtk.Location = new Point(77, 378);
             lblIVAtk.Name = "lblIVAtk";
             lblIVAtk.Size = new Size(25, 15);
             lblIVAtk.TabIndex = 12;
@@ -523,7 +550,7 @@ namespace ZAWarper
             // lblIVHP
             // 
             lblIVHP.AutoSize = true;
-            lblIVHP.Location = new Point(8, 380);
+            lblIVHP.Location = new Point(14, 378);
             lblIVHP.Name = "lblIVHP";
             lblIVHP.Size = new Size(23, 15);
             lblIVHP.TabIndex = 11;
@@ -532,7 +559,7 @@ namespace ZAWarper
             // cBIVDef
             // 
             cBIVDef.FormattingEnabled = true;
-            cBIVDef.Location = new Point(134, 398);
+            cBIVDef.Location = new Point(140, 396);
             cBIVDef.Name = "cBIVDef";
             cBIVDef.Size = new Size(57, 23);
             cBIVDef.TabIndex = 10;
@@ -541,7 +568,7 @@ namespace ZAWarper
             // cBIVAtk
             // 
             cBIVAtk.FormattingEnabled = true;
-            cBIVAtk.Location = new Point(71, 398);
+            cBIVAtk.Location = new Point(77, 396);
             cBIVAtk.Name = "cBIVAtk";
             cBIVAtk.Size = new Size(57, 23);
             cBIVAtk.TabIndex = 9;
@@ -550,7 +577,7 @@ namespace ZAWarper
             // cBIVHP
             // 
             cBIVHP.FormattingEnabled = true;
-            cBIVHP.Location = new Point(8, 398);
+            cBIVHP.Location = new Point(14, 396);
             cBIVHP.Name = "cBIVHP";
             cBIVHP.Size = new Size(57, 23);
             cBIVHP.TabIndex = 8;
@@ -559,7 +586,7 @@ namespace ZAWarper
             // lblIV
             // 
             lblIV.AutoSize = true;
-            lblIV.Location = new Point(8, 363);
+            lblIV.Location = new Point(14, 361);
             lblIV.Name = "lblIV";
             lblIV.Size = new Size(25, 15);
             lblIV.TabIndex = 7;
@@ -570,7 +597,7 @@ namespace ZAWarper
             cBSpecies.CheckOnClick = true;
             cBSpecies.FormattingEnabled = true;
             cBSpecies.IntegralHeight = false;
-            cBSpecies.Location = new Point(8, 214);
+            cBSpecies.Location = new Point(10, 213);
             cBSpecies.Name = "cBSpecies";
             cBSpecies.Size = new Size(193, 142);
             cBSpecies.TabIndex = 6;
@@ -579,9 +606,9 @@ namespace ZAWarper
             // 
             // btnResetSpecies
             // 
-            btnResetSpecies.Location = new Point(140, 194);
+            btnResetSpecies.Location = new Point(140, 193);
             btnResetSpecies.Name = "btnResetSpecies";
-            btnResetSpecies.Size = new Size(62, 23);
+            btnResetSpecies.Size = new Size(64, 23);
             btnResetSpecies.TabIndex = 29;
             btnResetSpecies.Text = "Reset";
             btnResetSpecies.UseVisualStyleBackColor = true;
@@ -590,7 +617,7 @@ namespace ZAWarper
             // lblSpecies
             // 
             lblSpecies.AutoSize = true;
-            lblSpecies.Location = new Point(6, 197);
+            lblSpecies.Location = new Point(10, 196);
             lblSpecies.Name = "lblSpecies";
             lblSpecies.Size = new Size(46, 15);
             lblSpecies.TabIndex = 5;
@@ -599,7 +626,7 @@ namespace ZAWarper
             // lblFilter
             // 
             lblFilter.AutoSize = true;
-            lblFilter.Location = new Point(6, 182);
+            lblFilter.Location = new Point(10, 181);
             lblFilter.Name = "lblFilter";
             lblFilter.Size = new Size(33, 15);
             lblFilter.TabIndex = 4;
@@ -848,6 +875,7 @@ namespace ZAWarper
             ((System.ComponentModel.ISupportInitialize)nUDDistance).EndInit();
             gBShinyHunt.ResumeLayout(false);
             gBShinyHunt.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pBAlpha).EndInit();
             ((System.ComponentModel.ISupportInitialize)nUDSaveFreq).EndInit();
             ((System.ComponentModel.ISupportInitialize)nUDCamMove).EndInit();
             ((System.ComponentModel.ISupportInitialize)nUDCheckTime).EndInit();
@@ -934,6 +962,8 @@ namespace ZAWarper
         private Button btnExport;
         private Button btnWebhookSettings;
         private Button btnResetFilters;
+        private PictureBox pBAlpha;
+        private CheckBox cBIsAlpha;
     }
 }
 
