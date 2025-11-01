@@ -5,8 +5,7 @@ namespace ZAWarper
     public class ProgramConfig
     {
         public string IPAddress { get; set; } = "192.168.0.1";
-        public string Webhook { get; set; } = "";
-        public bool SendWebhook { get; set; } = false;
+        public List<WebhookData> Webhooks { get; set; } = [];
         public List<Vector3> Positions { get; set; } = [];
         public List<int> SpeciesIndices { get; set; } = [];
         public decimal SpawnCheckTime { get; set; } = 2000;
@@ -21,5 +20,12 @@ namespace ZAWarper
         public int IVSpA { get; set; } = 0;
         public int IVSpD { get; set; } = 0;
         public int IVSpe { get; set; } = 0;
+    }
+
+    public class WebhookData
+    {
+        public string WebhookAddress { get; set; } = string.Empty;
+        public string MessageContents { get; set; } = string.Empty;
+        public bool Enabled { get; set; } = false;
     }
 }

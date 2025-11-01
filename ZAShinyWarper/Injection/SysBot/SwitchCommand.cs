@@ -212,26 +212,26 @@ namespace NHSE.Injection
     {
         public static byte[] GetPeekCommand(ulong offset, int count, RWMethod method, bool usb)
         {
-            switch (method)
+            return method switch
             {
-                case RWMethod.Heap when !usb: return SwitchCommand.Peek((uint)offset, count);
-                case RWMethod.Heap when usb: return SwitchCommand.PeekRaw((uint)offset, count);
-                case RWMethod.Main: return SwitchCommand.PeekMain(offset, count);
-                case RWMethod.Absolute: return SwitchCommand.PeekAbsolute(offset, count);
-                default: return SwitchCommand.Peek((uint)offset, count);
-            }
+                RWMethod.Heap when !usb => SwitchCommand.Peek((uint)offset, count),
+                RWMethod.Heap when usb => SwitchCommand.PeekRaw((uint)offset, count),
+                RWMethod.Main => SwitchCommand.PeekMain(offset, count),
+                RWMethod.Absolute => SwitchCommand.PeekAbsolute(offset, count),
+                _ => SwitchCommand.Peek((uint)offset, count),
+            };
         }
 
         public static byte[] GetPokeCommand(ulong offset, byte[] data, RWMethod method, bool usb)
         {
-            switch (method)
+            return method switch
             {
-                case RWMethod.Heap when !usb: return SwitchCommand.Poke((uint)offset, data);
-                case RWMethod.Heap when usb: return SwitchCommand.PokeRaw((uint)offset, data);
-                case RWMethod.Main: return SwitchCommand.PokeMain(offset, data);
-                case RWMethod.Absolute: return SwitchCommand.PokeAbsolute(offset, data);
-                default: return SwitchCommand.Poke((uint)offset, data);
-            }
+                RWMethod.Heap when !usb => SwitchCommand.Poke((uint)offset, data),
+                RWMethod.Heap when usb => SwitchCommand.PokeRaw((uint)offset, data),
+                RWMethod.Main => SwitchCommand.PokeMain(offset, data),
+                RWMethod.Absolute => SwitchCommand.PokeAbsolute(offset, data),
+                _ => SwitchCommand.Poke((uint)offset, data),
+            };
         }
     }
 }

@@ -25,6 +25,8 @@ namespace ZAWarper
         private const string Config = "config.json";
         private static readonly JsonSerializerOptions jsonOptions = new() { WriteIndented = true };
 
+        private ProgramConfig programConfig = new();
+
         private readonly ShinyHunter<PA9> shinyHunter = new();
         private readonly List<PictureBox> StashList;
         private readonly HttpClient httpClient = new();
@@ -412,6 +414,23 @@ namespace ZAWarper
             SaveConfig();
         }
 
+        private void OnClickResetFilters(object sender, EventArgs e)
+        {
+            // Reset all filters to default
+            for (int i = 0; i < cBSpecies.Items.Count; i++)
+            {
+                cBSpecies.SetItemChecked(i, false);
+            }
+            cBSpecies.SetItemChecked(0, true);
+            foreach (var cb in CBIVs)
+            {
+                cb.SelectedIndex = 0;
+            }
+            nUDScaleMin.Value = 0;
+            nUDScaleMax.Value = 255;
+            SaveConfig();
+        }
+
         private void LoadAllAndUpdateUI()
         {
             LoadConfig();
@@ -443,37 +462,31 @@ namespace ZAWarper
         {
             try
             {
-                var config = new ProgramConfig
-                {
-                    // Control Settings
-                    IPAddress = tB_IP.Text,
-                    Webhook = tBWebhook.Text,
-                    SendWebhook = cBWebhook.Checked,
-                    Positions = [.. positions],
-
-                    // Filter settings
-                    SpawnCheckTime = nUDCheckTime.Value,
-                    CamMove = nUDCamMove.Value,
-                    SaveFreq = nUDSaveFreq.Value,
-                    WhenShinyFound = cBWhenShinyFound.SelectedIndex,
-                    IVHP = cBIVHP.SelectedIndex,
-                    IVAtk = cBIVAtk.SelectedIndex,
-                    IVDef = cBIVDef.SelectedIndex,
-                    IVSpA = cBIVSpA.SelectedIndex,
-                    IVSpD = cBIVSpD.SelectedIndex,
-                    IVSpe = cBIVSpe.SelectedIndex,
-                    ScaleMin = nUDScaleMin.Value,
-                    ScaleMax = nUDScaleMax.Value
-                };
+                programConfig.IPAddress = tB_IP.Text;
+                programConfig.Positions = [.. positions];
+                programConfig.SpawnCheckTime = nUDCheckTime.Value;
+                programConfig.CamMove = nUDCamMove.Value;
+                programConfig.SaveFreq = nUDSaveFreq.Value;
+                programConfig.WhenShinyFound = cBWhenShinyFound.SelectedIndex;
+                programConfig.IVHP = cBIVHP.SelectedIndex;
+                programConfig.IVAtk = cBIVAtk.SelectedIndex;
+                programConfig.IVDef = cBIVDef.SelectedIndex;
+                programConfig.IVSpA = cBIVSpA.SelectedIndex;
+                programConfig.IVSpD = cBIVSpD.SelectedIndex;
+                programConfig.IVSpe = cBIVSpe.SelectedIndex;
+                programConfig.ScaleMin = nUDScaleMin.Value;
+                programConfig.ScaleMax = nUDScaleMax.Value;
 
                 // Species
+                programConfig.SpeciesIndices.Clear();
                 for (int i = 0; i < cBSpecies.Items.Count; i++)
                 {
                     if (cBSpecies.GetItemChecked(i))
-                        config.SpeciesIndices.Add(i);
+                        programConfig.SpeciesIndices.Add(i);
                 }
 
-                var json = JsonSerializer.Serialize(config, jsonOptions);
+
+                var json = JsonSerializer.Serialize(programConfig, jsonOptions);
                 File.WriteAllText(Config, json);
             }
             catch
@@ -500,34 +513,34 @@ namespace ZAWarper
                 if (config == null)
                     return;
 
+                programConfig = config; 
+
                 // Load all filter settings
                 for (int i = 0; i < cBSpecies.Items.Count; i++)
                 {
                     cBSpecies.SetItemChecked(i, false);
                 }
 
-                foreach (var idx in config.SpeciesIndices)
+                foreach (var idx in programConfig.SpeciesIndices)
                 {
                     if (idx < cBSpecies.Items.Count)
                         cBSpecies.SetItemChecked(idx, true);
                 }
 
-                tB_IP.Text = config.IPAddress;
-                tBWebhook.Text = config.Webhook;
-                cBWebhook.Checked = config.SendWebhook;
-                positions = [.. config.Positions];
-                nUDCheckTime.Value = config.SpawnCheckTime;
-                nUDCamMove.Value = config.CamMove;
-                nUDSaveFreq.Value = config.SaveFreq;
-                nUDScaleMin.Value = config.ScaleMin;
-                nUDScaleMax.Value = config.ScaleMax;
-                cBWhenShinyFound.SelectedIndex = config.WhenShinyFound;
-                cBIVHP.SelectedIndex = config.IVHP;
-                cBIVAtk.SelectedIndex = config.IVAtk;
-                cBIVDef.SelectedIndex = config.IVDef;
-                cBIVSpA.SelectedIndex = config.IVSpA;
-                cBIVSpD.SelectedIndex = config.IVSpD;
-                cBIVSpe.SelectedIndex = config.IVSpe;
+                tB_IP.Text = programConfig.IPAddress;
+                positions = [.. programConfig.Positions];
+                nUDCheckTime.Value = programConfig.SpawnCheckTime;
+                nUDCamMove.Value = programConfig.CamMove;
+                nUDSaveFreq.Value = programConfig.SaveFreq;
+                nUDScaleMin.Value = programConfig.ScaleMin;
+                nUDScaleMax.Value = programConfig.ScaleMax;
+                cBWhenShinyFound.SelectedIndex = programConfig.WhenShinyFound;
+                cBIVHP.SelectedIndex = programConfig.IVHP;
+                cBIVAtk.SelectedIndex = programConfig.IVAtk;
+                cBIVDef.SelectedIndex = programConfig.IVDef;
+                cBIVSpA.SelectedIndex = programConfig.IVSpA;
+                cBIVSpD.SelectedIndex = programConfig.IVSpD;
+                cBIVSpe.SelectedIndex = programConfig.IVSpe;
             }
             catch
             {
@@ -537,15 +550,14 @@ namespace ZAWarper
 
         private void SetUIEnableState(bool wifi, bool enabled)
         {
-            cBWebhook.Enabled = enabled;
-            tBWebhook.Enabled = enabled;
-            lblSend.Enabled = enabled;
-            lblWebhook.Enabled = enabled;
             gBControls.Enabled = enabled;
             gBShinyHunt.Enabled = enabled;
             gBStashedShiny.Enabled = enabled;
             btnScreenOn.Enabled = enabled;
             btnScreenOff.Enabled = enabled;
+            btnWebhookSettings.Enabled = enabled;
+            btnWarp.Enabled = enabled;
+            btnResetFilters.Enabled = enabled;
             btnExport.Enabled = enabled;
 
             if (wifi)
@@ -575,7 +587,7 @@ namespace ZAWarper
             gBControls.PerformSafely(() => gBControls.Enabled = enabled);
             btnResetSpecies.PerformSafely(() => btnResetSpecies.Enabled = enabled);
             nUDScaleMax.PerformSafely(() => nUDScaleMax.Enabled = enabled);
-
+            btnResetFilters.PerformSafely(() => btnResetFilters.Enabled = enabled);
         }
 
         private void SetWarpingEnableState(bool enabled)
@@ -622,7 +634,7 @@ namespace ZAWarper
 
             if (positions.Count < 2)
             {
-                MessageBox.Show("Not enough postions have been set to warp to!");
+                MessageBox.Show("A minimum of 2 warp positions is required!");
                 return;
             }
 
@@ -678,7 +690,7 @@ namespace ZAWarper
                                     MessageBox.Show($"A shiny matching the filter has been found after {currentWarps} attempts! Stopping warping.\r\n\r\n{pk}\r\n" +
                                                          (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                                    if (cBWebhook.Checked)
+                                    //if (cBWebhook.Checked)
                                         await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                     break;
 
@@ -694,13 +706,13 @@ namespace ZAWarper
                                                              (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                     }
 
-                                    if (cBWebhook.Checked)
+                                    //if (cBWebhook.Checked)
                                         await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                     break;
 
                                 case ShinyFoundAction.CacheAndContinue:
 
-                                    if (cBWebhook.Checked)
+                                    //if (cBWebhook.Checked)
                                         await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                     break;
                             }
@@ -716,7 +728,7 @@ namespace ZAWarper
                                 SetFiltersEnableState(true);
                                 MessageBox.Show($"No shiny matching your filter was found.\r\n Your shiny cache is now full!\r\nStopping warping.", "Cache Full!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                                if (cBWebhook.Checked)
+                                //if (cBWebhook.Checked)
                                     await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                             }
                             else // Notify the user anyway, but don't stop spawning/warping. The user should know that a shiny is found because it will occupy one of the shiny stash slots until it is removed
@@ -725,7 +737,7 @@ namespace ZAWarper
                                 {
                                     MessageBox.Show($"The following shiny has been found, but does not match your filter. You may wish to remove it such that it doesn't occupy one of your shiny stash slots.\r\n\r\n{pk}\r\n" +
                                                  (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found something we don't want!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    if (cBWebhook.Checked)
+                                    //if (cBWebhook.Checked)
                                         _ = SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                 });
                             }
@@ -876,11 +888,8 @@ namespace ZAWarper
 
         private async Task SendWebhook(string showdownSet, string species, string title)
         {
-            if (string.IsNullOrWhiteSpace(tBWebhook.Text))
-            {
-                MessageBox.Show("Webhook URL is empty, cannot send shiny notification.");
+            if (programConfig.Webhooks == null || programConfig.Webhooks.Count == 0)
                 return;
-            }
 
             string imageUrl = $"https://raw.githubusercontent.com/plusReedy/Images-Sprites-Balls/main/Shiny/{species.ToLower()}.png";
 
@@ -891,24 +900,43 @@ namespace ZAWarper
                 image = new { url = imageUrl }
             };
 
-            var payload = new
-            {
-                embeds = new[] { embed }
-            };
-
-            var json = JsonSerializer.Serialize(payload);
-            var webHooks = tBWebhook.Text.Split(',');
             var failedPosts = new List<string>();
-            foreach (var hook in webHooks)
+
+            foreach (var webhook in programConfig.Webhooks)
             {
+                if (!webhook.Enabled || string.IsNullOrWhiteSpace(webhook.WebhookAddress))
+                    continue;
+
                 try
                 {
-                    var response = await httpClient.PostAsync(hook.Trim(), new StringContent(json, Encoding.UTF8, "application/json"));
+                    string json;
+
+                    // Use custom message content if provided
+                    if (!string.IsNullOrWhiteSpace(webhook.MessageContents))
+                    {
+                        var payloadWithContent = new
+                        {
+                            content = webhook.MessageContents,
+                            embeds = new[] { embed }
+                        };
+                        json = JsonSerializer.Serialize(payloadWithContent);
+                    }
+                    else
+                    {
+                        var payloadNoContent = new
+                        {
+                            embeds = new[] { embed }
+                        };
+                        json = JsonSerializer.Serialize(payloadNoContent);
+                    }
+
+                    var response = await httpClient.PostAsync(webhook.WebhookAddress.Trim(),
+                        new StringContent(json, Encoding.UTF8, "application/json"));
                     response.EnsureSuccessStatusCode();
                 }
                 catch (HttpRequestException ex)
                 {
-                    failedPosts.Add($"{hook}: {ex.Message}");
+                    failedPosts.Add($"{webhook.WebhookAddress}: {ex.Message}");
                 }
             }
 
@@ -968,6 +996,16 @@ namespace ZAWarper
             catch
             {
                 // Silently fail if we can't import
+            }
+        }
+
+        private void OnClickWebhookSettings(object sender, EventArgs e)
+        {
+            var form = new WebhookForm(programConfig);
+            CenterFormOnParent(form);
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                SaveConfig();
             }
         }
     }
