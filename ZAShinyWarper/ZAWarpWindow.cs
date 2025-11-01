@@ -18,7 +18,7 @@ namespace ZAWarper
 {
     public partial class ZAWarpWindow : Form
     {
-        private readonly long[] jumpsPos = [0x41EC340, 0x248, 0x00, 0x138, 0x90]; // [[[[main+41EC340]+248]+00]+138]+90
+        private readonly long[] jumpsPos = [0x41EC340, 0x248, 0x00, 0x138]; // [[[[main+41EC340]+248]+00]+138]+90
         private static IRAMReadWriter bot = default!;
 
         private List<Vector3> positions = [];
@@ -401,7 +401,7 @@ namespace ZAWarper
 
         private ulong GetPlayerCoordinatesOffset()
         {
-            return bot.FollowMainPointer(jumpsPos);
+            return bot.FollowMainPointer(jumpsPos) + 0x90;
         }
 
         private void OnClickReset(object sender, EventArgs e)
