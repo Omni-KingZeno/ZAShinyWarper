@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Globalization;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using NHSE.Injection;
 using PKHeX.Core;
 using PKHeX.Drawing.PokeSprite;
-using ZAWarper.helpers;
+using ZAShinyWarper.helpers;
+using ZAShinyWarper.Hunting;
+using ZAShinyWarper.Injection;
 
-namespace ZAWarper
+namespace ZAShinyWarper
 {
     public partial class ZAWarpWindow : Form
     {
@@ -82,9 +75,9 @@ namespace ZAWarper
             LoadAllAndUpdateUI();
         }
 
-        private ShinyHunter<PA9>.ShinyFilter GetFilter()
+        private ShinyFilter<PA9> GetFilter()
         {
-            var filter = new ShinyHunter<PA9>.ShinyFilter();
+            var filter = new ShinyFilter<PA9>();
             // Species - collect all checked species
             var checkedSpecies = new List<ushort>();
             for (int i = 0; i < cBSpecies.Items.Count; i++)

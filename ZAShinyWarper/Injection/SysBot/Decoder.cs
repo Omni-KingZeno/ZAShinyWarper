@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NHSE.Injection
+﻿namespace ZAShinyWarper.Injection
 {
     public static class Decoder
     {

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ZAWarper.helpers
+﻿namespace ZAShinyWarper.helpers
 {
     internal static class ZAZukan
     {

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace NHSE.Injection
+namespace ZAShinyWarper.Injection
 {
     public static class PointerUtil
     {

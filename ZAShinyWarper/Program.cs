@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
-
-namespace ZAWarper
+﻿namespace ZAShinyWarper
 {
     internal static class Program
     {

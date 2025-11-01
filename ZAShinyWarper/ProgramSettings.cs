@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ZAWarper
+﻿namespace ZAShinyWarper
 {
     public class ProgramConfig
     {

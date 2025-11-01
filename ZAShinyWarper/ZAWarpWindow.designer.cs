@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace ZAWarper
+namespace ZAShinyWarper
 {
     partial class ZAWarpWindow
     {
@@ -868,7 +868,7 @@ namespace ZAWarper
             MaximizeBox = false;
             Name = "ZAWarpWindow";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Z-A Shiny Warper by Berichan";
+            Text = "Z-A Shiny Warper by Berichan V2";
             Load += LoadDefaults;
             gBControls.ResumeLayout(false);
             gBControls.PerformLayout();

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using PKHeX.Core;
 
-namespace ZAWarper.helpers
+namespace ZAShinyWarper.Hunting
 {
     public static class ShinyRollChecker<T> where T : PKM, new()
     {

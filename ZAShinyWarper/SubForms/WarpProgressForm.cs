@@ -1,6 +1,4 @@
-﻿using System.Windows.Forms;
-
-namespace ZAWarper
+﻿namespace ZAShinyWarper
 {
     public partial class WarpProgressForm : Form
     {

@@ -1,7 +1,6 @@
-﻿using System.Linq;
-using System.Text;
+﻿using System.Text;
 
-namespace NHSE.Injection
+namespace ZAShinyWarper.Injection
 {
     /// <summary>
     /// Encodes commands for a <see cref="SysBot"/> to be sent as a <see cref="byte"/> array.

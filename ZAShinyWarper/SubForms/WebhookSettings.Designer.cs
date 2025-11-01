@@ -1,6 +1,7 @@
 ﻿using System.Windows.Forms;
+using ZAShinyWarper;
 
-namespace ZAWarper
+namespace ZAShinyWarper
 {
     partial class WebhookForm
     {

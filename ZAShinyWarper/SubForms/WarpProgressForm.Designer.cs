@@ -1,4 +1,4 @@
-﻿namespace ZAWarper
+﻿namespace ZAShinyWarper
 {
     partial class WarpProgressForm
     {

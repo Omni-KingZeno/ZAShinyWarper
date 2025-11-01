@@ -1,4 +1,4 @@
-﻿namespace NHSE.Injection
+﻿namespace ZAShinyWarper.Injection
 {
     public interface IDataInjector
     {

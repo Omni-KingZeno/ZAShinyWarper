@@ -1,8 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
-using ZAWarper;
-
-namespace ZAWarper
+﻿namespace ZAShinyWarper
 {
     public partial class WebhookForm : Form
     {
@@ -44,7 +40,7 @@ namespace ZAWarper
             DataGridViewCheckBoxColumn checkColumn = new()
             {
                 Name = "enabled",
-                HeaderText = "Enabled",                
+                HeaderText = "Enabled",
                 Width = 50,
                 Resizable = DataGridViewTriState.False
             };

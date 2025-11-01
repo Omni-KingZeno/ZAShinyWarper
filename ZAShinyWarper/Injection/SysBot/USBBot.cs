@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using LibUsbDotNet;
+﻿using LibUsbDotNet;
 using LibUsbDotNet.Main;
 
-namespace NHSE.Injection
+namespace ZAShinyWarper.Injection
 {
     public class USBBot : IRAMReadWriter
     {
