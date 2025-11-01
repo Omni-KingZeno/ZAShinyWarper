@@ -18,17 +18,17 @@ namespace ZAWarper
 {
     public partial class ZAWarpWindow : Form
     {
-        private readonly long[] jumpsPos = [0x41EC340, 0x248, 0x00, 0x138]; // [[[[main+41EC340]+248]+00]+138]+90
+        private readonly long[] jumpsPos = [0x41EC340, 0x248, 0x00, 0x138, 0x90]; // [[[[main+41EC340]+248]+00]+138]+90
         private static IRAMReadWriter bot = default!;
 
         private List<Vector3> positions = [];
         private const string Config = "config.json";
         private static readonly JsonSerializerOptions jsonOptions = new() { WriteIndented = true };
 
-        private ShinyHunter<PA9> shinyHunter = new();
+        private readonly ShinyHunter<PA9> shinyHunter = new();
         private readonly List<PictureBox> StashList;
         private readonly HttpClient httpClient = new();
-        private WarpProgressForm warpProgress = new();
+        private readonly WarpProgressForm warpProgress = new();
 
         public ComboBox[] CBIVs = default!;
 
@@ -397,7 +397,7 @@ namespace ZAWarper
 
         private ulong GetPlayerCoordinatesOffset()
         {
-            return bot.FollowMainPointer(jumpsPos) + 0x90;
+            return bot.FollowMainPointer(jumpsPos);
         }
 
         private void OnClickReset(object sender, EventArgs e)
@@ -586,7 +586,7 @@ namespace ZAWarper
             btnWarp.PerformSafely(() => btnWarp.Enabled = enabled);
         }
 
-        private void CleanUpBot()
+        private static void CleanUpBot()
         {
             if (bot != null && bot.Connected)
             {
@@ -595,7 +595,7 @@ namespace ZAWarper
             }
         }
 
-        private async Task SaveGame()
+        private static async Task SaveGame()
         {
             bot.SendBytes(Encoding.ASCII.GetBytes("click X\r\n"));
             await Task.Delay(1_000).ConfigureAwait(false);
@@ -982,14 +982,6 @@ namespace ZAWarper
         public Vector3()
         {
             X = 0; Y = 0; Z = 0;
-            Flags = [];
-        }
-
-        public Vector3(float x, float y, float z)
-        {
-            X = x;
-            Y = y;
-            Z = z;
             Flags = [];
         }
 

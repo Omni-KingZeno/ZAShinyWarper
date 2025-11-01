@@ -28,15 +28,15 @@ namespace ZAWarper
     {
         public class ShinyFilter
         {
-            public IVType[] IVs { get; set; } = new IVType[6]
-            {
+            public IVType[] IVs { get; set; } =
+            [
                 IVType.Any,
                 IVType.Any,
                 IVType.Any,
                 IVType.Any,
                 IVType.Any,
                 IVType.Any
-            };
+            ];
             public List<ushort>? SpeciesList { get; set; } = null;
             public byte SizeMinimum { get; set; } = 0;
             public byte SizeMaximum { get; set; } = 0;
@@ -45,8 +45,6 @@ namespace ZAWarper
             {
 
             }
-
-            public ShinyFilter(IVType[] iVs, ushort species, byte sizeMin) { }
 
             public bool MatchesFilter(T pk)
             {
@@ -131,8 +129,6 @@ namespace ZAWarper
         public IList<StashedShiny> StashedShinies { get; private set; } = [];
         public IList<StashedShiny> DifferentShinies { get; private set; } = [];
 
-        public ShinyFilter Filter { get; private set; } = new ShinyFilter();
-
         private ulong GetShinyStashOffset(IRAMReadWriter bot)
         {
             return bot.FollowMainPointer(jumpsPos);
@@ -159,7 +155,7 @@ namespace ZAWarper
                 var construct = typeof(T).GetConstructor([typeof(Memory<byte>)]);
                 Debug.Assert(construct != null, "PKM type must have a Memory<byte> constructor");
 
-                var pk = (T)construct.Invoke(new object[] { new Memory<byte>(data[8..]) });
+                var pk = (T)construct.Invoke([new Memory<byte>(data[8..])]);
                 var location = BitConverter.ToUInt64(data, 0);
                 if (pk.Species != 0)
                 {
@@ -189,21 +185,6 @@ namespace ZAWarper
                 info.AppendLine(pk.ToString());
             }
             return info.ToString();
-        }
-
-        public string GetShowdownSets(IList<T> pkms)
-        {
-            var sets = new StringBuilder();
-            foreach (var pk in pkms)
-            {
-                sets.AppendLine(ShowdownParsing.GetShowdownText(pk) + "\r\n");
-            }
-            return sets.ToString();
-        }
-
-        public void InitialiseFilter(ShinyFilter filter)
-        {
-            Filter = filter;
         }
     }
 }
