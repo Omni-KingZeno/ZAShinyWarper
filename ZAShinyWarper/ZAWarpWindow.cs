@@ -705,7 +705,7 @@ namespace ZAShinyWarper
                     foreach (var pk in newShinies)
                     {
                         shiniesFound++;
-                        if (filter.MatchesFilter(pk.PKM))
+                        if (filter.MatchesFilter(pk.PKM) || action == ShinyFoundAction.StopAtFullCache)
                         {
                             // Found one
                             switch (action)
