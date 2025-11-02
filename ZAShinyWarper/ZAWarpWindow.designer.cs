@@ -355,6 +355,7 @@ namespace ZAShinyWarper
             cBIsAlpha.Size = new Size(15, 14);
             cBIsAlpha.TabIndex = 32;
             cBIsAlpha.UseVisualStyleBackColor = true;
+            cBIsAlpha.CheckedChanged += OnAlphaCheckedChanged;
             cBIsAlpha.CheckedChanged += OnConfigurationChange;
             // 
             // pBAlpha
