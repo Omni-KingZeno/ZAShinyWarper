@@ -36,6 +36,7 @@ namespace ZAShinyWarper
             InitializeComponent();
             CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
             Application.ApplicationExit += (s, e) => CleanUpBot();
+            SpriteName.AllowShinySprite = true;
             StashList = [StashedShiny1, StashedShiny2, StashedShiny3, StashedShiny4, StashedShiny5, StashedShiny6, StashedShiny7, StashedShiny8, StashedShiny9, StashedShiny10];
         }
 
