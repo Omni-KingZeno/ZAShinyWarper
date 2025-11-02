@@ -283,6 +283,11 @@ namespace ZAShinyWarper
             MovePlayer(-1, 0);
         }
 
+        private void OnClickUp(object sender, EventArgs e)
+        {
+            MovePlayerZ();
+        }
+
         private void OnClickSave(object sender, EventArgs e)
         {
             var pos = GetPlayerPosition();
@@ -371,6 +376,18 @@ namespace ZAShinyWarper
 
             bot.WriteBytes(BitConverter.GetBytes(xn), ramOffset, RWMethod.Absolute);
             bot.WriteBytes(BitConverter.GetBytes(yn), ramOffset + 8, RWMethod.Absolute);
+        }
+
+        private void MovePlayerZ()
+        {
+            int stepOffset = (int)nUDDistance.Value;
+            ulong ramOffset = GetPlayerCoordinatesOffset();
+
+            var bytes = bot.ReadBytes(ramOffset, 12, RWMethod.Absolute);
+            float zn = BitConverter.ToSingle(bytes, 4);
+            zn += stepOffset;
+
+            bot.WriteBytes(BitConverter.GetBytes(zn), ramOffset + 4, RWMethod.Absolute);
         }
 
         private Vector3 GetPlayerPosition()

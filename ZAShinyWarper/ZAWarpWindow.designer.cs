@@ -99,6 +99,7 @@ namespace ZAShinyWarper
             ShinyInfo = new ToolTip(components);
             btnExport = new Button();
             btnWebhookSettings = new Button();
+            btnMoveUp = new Button();
             gBControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nUDDistance).BeginInit();
             gBShinyHunt.SuspendLayout();
@@ -154,6 +155,7 @@ namespace ZAShinyWarper
             // 
             // gBControls
             // 
+            gBControls.Controls.Add(btnMoveUp);
             gBControls.Controls.Add(btnDelete);
             gBControls.Controls.Add(btnRestore);
             gBControls.Controls.Add(btnSave);
@@ -353,13 +355,12 @@ namespace ZAShinyWarper
             cBIsAlpha.Size = new Size(15, 14);
             cBIsAlpha.TabIndex = 32;
             cBIsAlpha.UseVisualStyleBackColor = true;
-            cBIsAlpha.CheckedChanged += OnAlphaCheckedChanged;
             cBIsAlpha.CheckedChanged += OnConfigurationChange;
             // 
             // pBAlpha
             // 
             pBAlpha.BackgroundImageLayout = ImageLayout.None;
-            pBAlpha.Image = ZAShinyWarper.Properties.Resources.alpha;
+            pBAlpha.Image = Properties.Resources.alpha;
             pBAlpha.Location = new Point(14, 481);
             pBAlpha.Name = "pBAlpha";
             pBAlpha.Size = new Size(31, 32);
@@ -844,6 +845,18 @@ namespace ZAShinyWarper
             btnWebhookSettings.UseVisualStyleBackColor = true;
             btnWebhookSettings.Click += OnClickWebhookSettings;
             // 
+            // btnMoveUp
+            // 
+            btnMoveUp.Font = new Font("Segoe UI", 10F);
+            btnMoveUp.Location = new Point(108, 285);
+            btnMoveUp.Margin = new Padding(4, 3, 4, 3);
+            btnMoveUp.Name = "btnMoveUp";
+            btnMoveUp.Size = new Size(88, 27);
+            btnMoveUp.TabIndex = 18;
+            btnMoveUp.Text = "↨";
+            btnMoveUp.UseVisualStyleBackColor = true;
+            btnMoveUp.Click += OnClickUp;
+            // 
             // ZAWarpWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -964,6 +977,7 @@ namespace ZAShinyWarper
         private Button btnResetFilters;
         private PictureBox pBAlpha;
         private CheckBox cBIsAlpha;
+        private Button btnMoveUp;
     }
 }
 
