@@ -691,8 +691,6 @@ namespace ZAShinyWarper
             var camSpeed = (int)nUDCamMove.Value;
             var action = (ShinyFoundAction)cBWhenShinyFound.SelectedItem!;
             var saveFrequency = (int)nUDSaveFreq.Value;
-            var strings = GameInfo.GetStrings("en");
-
             int shiniesFound = 0;
 
             currentWarps = 0;
@@ -730,7 +728,7 @@ namespace ZAShinyWarper
                             switch (action)
                             {
                                 case ShinyFoundAction.StopOnFound:
-                                    await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+                                    await SendWebhook(pk.ToString(), pk.PKM);
 
                                     warping = false;
                                     CleanUpBot();
@@ -744,7 +742,7 @@ namespace ZAShinyWarper
                                 case ShinyFoundAction.StopAtFullCache:
                                     if (shinyHunter.StashedShinies.Count == 10)
                                     {
-                                        await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+                                        await SendWebhook(pk.ToString(), pk.PKM);
 
                                         warping = false;
                                         CleanUpBot();
@@ -757,7 +755,7 @@ namespace ZAShinyWarper
                                     break;
 
                                 case ShinyFoundAction.CacheAndContinue:
-                                    await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+                                    await SendWebhook(pk.ToString(), pk.PKM);
                                     break;
                             }
                         }
@@ -765,7 +763,7 @@ namespace ZAShinyWarper
                         {
                             if (action == ShinyFoundAction.StopAtFullCache && shinyHunter.StashedShinies.Count == 10)
                             {
-                                await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+                                await SendWebhook(pk.ToString(), pk.PKM);
 
                                 warping = false;
                                 CleanUpBot();
@@ -778,7 +776,7 @@ namespace ZAShinyWarper
                             {
                                 CrossThreadExtensions.DoThreaded(() =>
                                 {
-                                    _ = SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+                                    _ = SendWebhook(pk.ToString(), pk.PKM);
 
                                     MessageBox.Show($"The following shiny has been found, but does not match your filter. You may wish to remove it such that it doesn't occupy one of your shiny stash slots.\r\n\r\n{pk}\r\n" +
                                                  (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found something we don't want!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -929,16 +927,21 @@ namespace ZAShinyWarper
             }
         }
 
-        private async Task SendWebhook(string showdownSet, string species, string title)
+        private async Task SendWebhook(string showdownSet, PA9 pk)
         {
             if (programConfig.Webhooks == null || programConfig.Webhooks.Count == 0)
                 return;
 
-            string imageUrl = $"https://raw.githubusercontent.com/plusReedy/Images-Sprites-Balls/main/Shiny/{species.ToLower()}.png";
+            var strings = GameInfo.GetStrings("en");
+            var species = strings.Species[pk.Species];
+            var formName = ShowdownParsing.GetStringFromForm(pk.Form, strings, pk.Species, pk.Context);
+            if (!string.IsNullOrEmpty(formName))
+                species += $"-{formName}";
+            string imageUrl = $"https://raw.githubusercontent.com/Omni-KingZeno/Pokemon-Sprites/refs/heads/main/Shiny/{species.ToLower()}.png";
 
             var embed = new
             {
-                title,
+                title = $"{(pk.IsAlpha ? "Alpha " : "")}Shiny {species} Found!",
                 description = showdownSet,
                 image = new { url = imageUrl }
             };
