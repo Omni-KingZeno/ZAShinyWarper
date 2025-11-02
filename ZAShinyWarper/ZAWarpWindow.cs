@@ -348,8 +348,14 @@ namespace ZAShinyWarper
         {
             if (lBCoords.SelectedIndex > -1)
             {
+                var removedIndex = lBCoords.SelectedIndex;
                 positions.RemoveAt(lBCoords.SelectedIndex);
                 SaveAllAndUpdateUI();
+
+                if (removedIndex >= lBCoords.Items.Count)
+                    lBCoords.SelectedIndex = lBCoords.Items.Count - 1;
+                else
+                    lBCoords.SelectedIndex = removedIndex;
             }
         }
 
@@ -600,8 +606,16 @@ namespace ZAShinyWarper
             gBControls.PerformSafely(() => gBControls.Enabled = enabled);
             btnResetSpecies.PerformSafely(() => btnResetSpecies.Enabled = enabled);
             cBIsAlpha.PerformSafely(() => cBIsAlpha.Enabled = enabled);
-            nUDScaleMin.PerformSafely(() => nUDScaleMin.Enabled = enabled);
-            nUDScaleMax.PerformSafely(() => nUDScaleMax.Enabled = enabled);
+            if (cBIsAlpha.Checked)
+            {
+                nUDScaleMin.PerformSafely(() => nUDScaleMin.Enabled = false);
+                nUDScaleMax.PerformSafely(() => nUDScaleMax.Enabled = false);
+            }
+            else
+            {
+                nUDScaleMin.PerformSafely(() => nUDScaleMin.Enabled = enabled);
+                nUDScaleMax.PerformSafely(() => nUDScaleMax.Enabled = enabled);
+            }
             btnResetFilters.PerformSafely(() => btnResetFilters.Enabled = enabled);
         }
 
@@ -697,6 +711,8 @@ namespace ZAShinyWarper
                             switch (action)
                             {
                                 case ShinyFoundAction.StopOnFound:
+                                    await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+
                                     warping = false;
                                     CleanUpBot();
                                     bot.SendBytes(Encoding.ASCII.GetBytes("click X\r\n"));
@@ -704,13 +720,13 @@ namespace ZAShinyWarper
                                     SetFiltersEnableState(true);
                                     MessageBox.Show($"A shiny matching the filter has been found after {currentWarps} attempts! Stopping warping.\r\n\r\n{pk}\r\n" +
                                                          (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                                    await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                     break;
 
                                 case ShinyFoundAction.StopAtFullCache:
                                     if (shinyHunter.StashedShinies.Count == 10)
                                     {
+                                        await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+
                                         warping = false;
                                         CleanUpBot();
                                         bot.SendBytes(Encoding.ASCII.GetBytes("click X\r\n"));
@@ -719,8 +735,6 @@ namespace ZAShinyWarper
                                         MessageBox.Show($"A shiny matching the filter has been found after {currentWarps} attempts, and your stash is now full! Stopping warping.\r\n\r\n{pk}\r\n" +
                                                              (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                     }
-
-                                    await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                     break;
 
                                 case ShinyFoundAction.CacheAndContinue:
@@ -732,23 +746,23 @@ namespace ZAShinyWarper
                         {
                             if (action == ShinyFoundAction.StopAtFullCache && shinyHunter.StashedShinies.Count == 10)
                             {
+                                await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+
                                 warping = false;
                                 CleanUpBot();
                                 bot.SendBytes(Encoding.ASCII.GetBytes("click X\r\n"));
                                 btnWarp.PerformSafely(() => btnWarp.Text = "Start Warping");
                                 SetFiltersEnableState(true);
                                 MessageBox.Show($"No shiny matching your filter was found.\r\n Your shiny cache is now full!\r\nStopping warping.", "Cache Full!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                                await SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                             }
                             else // Notify the user anyway, but don't stop spawning/warping. The user should know that a shiny is found because it will occupy one of the shiny stash slots until it is removed
                             {
                                 CrossThreadExtensions.DoThreaded(() =>
                                 {
+                                    _ = SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
+
                                     MessageBox.Show($"The following shiny has been found, but does not match your filter. You may wish to remove it such that it doesn't occupy one of your shiny stash slots.\r\n\r\n{pk}\r\n" +
                                                  (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found something we don't want!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                                    _ = SendWebhook(pk.ToString(), strings.Species[pk.PKM.Species], $"{(pk.PKM.IsAlpha ? "Alpha " : "")}Shiny Found!");
                                 });
                             }
                         }
