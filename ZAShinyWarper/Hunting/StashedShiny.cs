@@ -27,5 +27,6 @@ namespace ZAShinyWarper.Hunting
         }
 
         public override string ToString() => $"Location hash: {LocationHash:X16}\r\n{GetRollsInfo()}\r\n" + ShowdownParsing.GetShowdownText(PKM) + "\r\n";
+        public string ToShowdownString() => ShowdownParsing.GetShowdownText(PKM);
     }
 }

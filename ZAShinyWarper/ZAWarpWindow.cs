@@ -28,6 +28,7 @@ namespace ZAShinyWarper
         public ComboBox[] CBIVs = default!;
 
         // Bot
+        private bool matchingShinyFound = false;
         private bool warping = false;
         private int currentWarps = 0;
 
@@ -691,11 +692,11 @@ namespace ZAShinyWarper
             var camSpeed = (int)nUDCamMove.Value;
             var action = (ShinyFoundAction)cBWhenShinyFound.SelectedItem!;
             var saveFrequency = (int)nUDSaveFreq.Value;
-            int shiniesFound = 0;
 
             currentWarps = 0;
 
             warping = true;
+            matchingShinyFound = false;
             SetFiltersEnableState(false);
             btnWarp.PerformSafely(() => btnWarp.Text = "Warping. Click to end.");
 
@@ -715,74 +716,84 @@ namespace ZAShinyWarper
 
                 // Check shinies first as a new one may have spawned before we move
                 var newFound = shinyHunter.LoadStashedShinies(bot);
+                var cacheIsFull = shinyHunter.StashedShinies.Count == 10;
+
                 if (newFound)
                 {
                     DisplayStashedShinies();
                     var newShinies = shinyHunter.DifferentShinies;
                     foreach (var pk in newShinies)
                     {
-                        shiniesFound++;
-                        if (filter.MatchesFilter(pk.PKM) || action == ShinyFoundAction.StopAtFullCache)
+                        await SendWebhook(pk.ToShowdownString(), pk.PKM);
+
+                        var matchesFilter = filter.MatchesFilter(pk.PKM);
+
+                        if (matchesFilter)
                         {
-                            // Found one
-                            switch (action)
+                            matchingShinyFound = true;
+                        }
+
+                        var shouldStop = false;
+                        var stopMessage = string.Empty;
+
+                        if (matchesFilter && action == ShinyFoundAction.StopOnFound) // Found what we wanted. Stop warping, go catch it
+                        {
+                            shouldStop = true;
+                            stopMessage = $"A Shiny {(pk.PKM.IsAlpha ? "Alpha " : "")}matching the filter has been found after {currentWarps} attempts!\r\nStopping warping.\r\n\r\n{pk}\r\n";
+                        }
+                        else if (matchesFilter && cacheIsFull && (action == ShinyFoundAction.StopAtFullCache || action == ShinyFoundAction.CacheAndContinue)) // Found what we wanted in this run and the cache is full
+                        {
+                            shouldStop = true;
+                            stopMessage = $"A Shiny {(pk.PKM.IsAlpha ? "Alpha " : "")}matching the filter has been found after {currentWarps} attempts and your stash is now full!\r\nStopping warping.\r\n\r\n{pk}\r\n";
+                        }
+                        else if (!matchesFilter && cacheIsFull) // Does not match filter but the cache is full
+                        {
+                            if (action == ShinyFoundAction.StopAtFullCache) // Maybe something worth catching not being filtered for
                             {
-                                case ShinyFoundAction.StopOnFound:
-                                    await SendWebhook(pk.ToString(), pk.PKM);
-
-                                    warping = false;
-                                    CleanUpBot();
-                                    bot.SendBytes(Encoding.ASCII.GetBytes("click X\r\n"));
-                                    btnWarp.PerformSafely(() => btnWarp.Text = "Start Warping");
-                                    SetFiltersEnableState(true);
-                                    MessageBox.Show($"A shiny matching the filter has been found after {currentWarps} attempts! Stopping warping.\r\n\r\n{pk}\r\n" +
-                                                         (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    break;
-
-                                case ShinyFoundAction.StopAtFullCache:
-                                    if (shinyHunter.StashedShinies.Count == 10)
-                                    {
-                                        await SendWebhook(pk.ToString(), pk.PKM);
-
-                                        warping = false;
-                                        CleanUpBot();
-                                        bot.SendBytes(Encoding.ASCII.GetBytes("click X\r\n"));
-                                        btnWarp.PerformSafely(() => btnWarp.Text = "Start Warping");
-                                        SetFiltersEnableState(true);
-                                        MessageBox.Show($"A shiny matching the filter has been found after {currentWarps} attempts, and your stash is now full! Stopping warping.\r\n\r\n{pk}\r\n" +
-                                                             (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    }
-                                    break;
-
-                                case ShinyFoundAction.CacheAndContinue:
-                                    await SendWebhook(pk.ToString(), pk.PKM);
-                                    break;
+                                shouldStop = true;
+                                stopMessage = matchingShinyFound
+                                    ? "A shiny matching your filter was found earlier in the hunt.\r\nYour shiny cache is now full!\r\nStopping warping to preserve filtered match."
+                                    : "No shiny matching your filter was found.\r\nYour shiny cache is now full!\r\nStopping warping.";
+                            }
+                            else if (action == ShinyFoundAction.CacheAndContinue && matchingShinyFound) // Most recent does not match filter but the cache is now full and a filter match was found at an earlier point
+                            {
+                                shouldStop = true;
+                                stopMessage = "A shiny matching your filter was found earlier in the hunt.\r\nYour shiny cache is now full!\r\nStopping to preserve your matching shiny.";
+                            }
+                            else // Cache is full but no match found. Keep going
+                            {
+                                ShowUnwantedShinyMessage(pk);
                             }
                         }
-                        else // Notify the user their shiny cache is full
+                        else if (!matchesFilter) // No match, still room in cache
                         {
-                            if (action == ShinyFoundAction.StopAtFullCache && shinyHunter.StashedShinies.Count == 10)
-                            {
-                                await SendWebhook(pk.ToString(), pk.PKM);
-
-                                warping = false;
-                                CleanUpBot();
-                                bot.SendBytes(Encoding.ASCII.GetBytes("click X\r\n"));
-                                btnWarp.PerformSafely(() => btnWarp.Text = "Start Warping");
-                                SetFiltersEnableState(true);
-                                MessageBox.Show($"No shiny matching your filter was found.\r\n Your shiny cache is now full!\r\nStopping warping.", "Cache Full!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            }
-                            else // Notify the user anyway, but don't stop spawning/warping. The user should know that a shiny is found because it will occupy one of the shiny stash slots until it is removed
-                            {
-                                CrossThreadExtensions.DoThreaded(() =>
-                                {
-                                    _ = SendWebhook(pk.ToString(), pk.PKM);
-
-                                    MessageBox.Show($"The following shiny has been found, but does not match your filter. You may wish to remove it such that it doesn't occupy one of your shiny stash slots.\r\n\r\n{pk}\r\n" +
-                                                 (pk.PKM.IsAlpha ? "This Pokemon is ALPHA!" : "This Pokemon is not an alpha"), "Found something we don't want!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                });
-                            }
+                            ShowUnwantedShinyMessage(pk);
                         }
+
+                        if (shouldStop)
+                        {
+                            StopWarping(stopMessage);
+                        }
+                    }
+
+                    // Helper methods
+                    void StopWarping(string message)
+                    {
+                        warping = false;
+                        CleanUpBot();
+                        bot.SendBytes(Encoding.ASCII.GetBytes("click X\r\n"));
+                        btnWarp.PerformSafely(() => btnWarp.Text = "Start Warping");
+                        SetFiltersEnableState(true);
+                        MessageBox.Show(message, cacheIsFull ? "Cache Full!" : "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+
+                    void ShowUnwantedShinyMessage(StashedShiny<PA9> pk)
+                    {
+                        CrossThreadExtensions.DoThreaded(() =>
+                        {
+                            MessageBox.Show($"The following Shiny {(pk.PKM.IsAlpha ? "Alpha " : "")} has been found, but does not match your filter.\r\nYou may wish to remove it such that it doesn't occupy one of your shiny stash slots.\r\n\r\n{pk}\r\n",
+                                "Found something we don't want!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        });
                     }
                 }
 
@@ -937,13 +948,13 @@ namespace ZAShinyWarper
             var formName = ShowdownParsing.GetStringFromForm(pk.Form, strings, pk.Species, pk.Context);
             if (!string.IsNullOrEmpty(formName))
                 species += $"-{formName}";
-            string imageUrl = $"https://raw.githubusercontent.com/Omni-KingZeno/Pokemon-Sprites/refs/heads/main/Shiny/{species.ToLower()}.png";
+            string imageUrl = $"https://raw.githubusercontent.com/Omni-KingZeno/Pokemon-Sprites/refs/heads/main/Shiny/{species.ToLower().Replace("é", "e")}.png";
 
             var embed = new
             {
                 title = $"{(pk.IsAlpha ? "Alpha " : "")}Shiny {species} Found!",
                 description = showdownSet,
-                image = new { url = imageUrl }
+                image = new { url = imageUrl.Trim() }
             };
 
             var failedPosts = new List<string>();
