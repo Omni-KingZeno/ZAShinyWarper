@@ -24,6 +24,7 @@ namespace ZAShinyWarper
         private readonly List<PictureBox> StashList;
         private readonly HttpClient httpClient = new();
         private readonly WarpProgressForm warpProgress = new();
+        private ContextMenuStrip? shinyContextMenu;
 
         public ComboBox[] CBIVs = default!;
 
@@ -996,18 +997,18 @@ namespace ZAShinyWarper
         {
             PictureBox pb = (PictureBox)sender;
             pb.BorderStyle = BorderStyle.FixedSingle;
-
             ShinyInfo.Hide(pb);
             ShinyInfo.Active = false;
             ShinyInfo.Active = true;
-
             int index = StashList.IndexOf(pb);
             if (index >= 0 && index < shinyHunter.StashedShinies.Count)
             {
+                pb.ContextMenuStrip = shinyContextMenu; // Enable context menu
                 ShinyInfo.SetToolTip(pb, shinyHunter.StashedShinies[index].ToString());
             }
             else
             {
+                pb.ContextMenuStrip = null; // Disable context menu for empty slots
                 ShinyInfo.SetToolTip(pb, "No shiny data");
             }
         }
@@ -1022,6 +1023,12 @@ namespace ZAShinyWarper
 
         private void DisplayStashedShinies()
         {
+            // Initialize context menu
+            if (shinyContextMenu == null)
+            {
+                InitializeShinyContextMenu();
+            }
+
             ResetSprites();
             for (int i = 0; i < shinyHunter.StashedShinies.Count; i++)
             {
@@ -1034,6 +1041,127 @@ namespace ZAShinyWarper
             for (int i = shinyHunter.StashedShinies.Count; i < 10; i++)
             {
                 StashList[i].PerformSafely(() => StashList[i].Image = null);
+            }
+        }
+
+        private void InitializeShinyContextMenu()
+        {
+            shinyContextMenu = new ContextMenuStrip();
+            var clearItem = new ToolStripMenuItem("Clear from Stash");
+            clearItem.Click += ClearShinyFromStash;
+            shinyContextMenu.Items.Add(clearItem);
+
+            var clearAllItems = new ToolStripMenuItem("Clear ALL from Stash");
+            clearAllItems.Click += ClearStash;
+            shinyContextMenu.Items.Add(clearAllItems);
+
+            // Attach the context menu to all picture boxes
+            foreach (var pb in StashList)
+            {
+                pb.ContextMenuStrip = shinyContextMenu;
+            }
+        }
+
+        private void ClearShinyFromStash(object? sender, EventArgs e)
+        {
+            // Get the picture box that was right-clicked
+            if (sender is not ToolStripMenuItem menuItem)
+                return;
+            if (menuItem.Owner is not ContextMenuStrip contextMenu)
+                return;
+            if (contextMenu.SourceControl is not PictureBox pb)
+                return;
+
+            int index = StashList.IndexOf(pb);
+            if (index >= 0 && index < shinyHunter.StashedShinies.Count)
+            {
+                var shiny = shinyHunter.StashedShinies[index];
+
+                // Confirm with the user
+                var result = MessageBox.Show(
+                    $"Are you sure you want to clear {shiny.PKM.Nickname} from the stash?\n\nThis will despawn the Pokémon in-game.",
+                    "Confirm Clear",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    try
+                    {
+                        // Call the despawn method
+                        shinyHunter.RemoveShinyFromCache(bot, index);
+
+                        // Reload the stashed shinies
+                        shinyHunter.LoadStashedShinies(bot);
+
+                        // Update the display
+                        DisplayStashedShinies();
+
+                        MessageBox.Show(
+                            $"{shiny.PKM.Nickname} has been cleared from the stash.",
+                            "Success",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(
+                            $"Error clearing shiny from stash: {ex.Message}",
+                            "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void ClearStash(object? sender, EventArgs e)
+        {
+            // Get the picture box that was right-clicked
+            if (sender is not ToolStripMenuItem menuItem)
+                return;
+            if (menuItem.Owner is not ContextMenuStrip contextMenu)
+                return;
+            if (contextMenu.SourceControl is not PictureBox)
+                return;
+
+            if (shinyHunter.StashedShinies.Count != 0)
+            {
+                // Confirm with the user
+                var result = MessageBox.Show(
+                    $"Are you sure you want to clear ALL stashed shinies?\n\nThis will despawn all current shinies in-game.",
+                    "Confirm Clear",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    try
+                    {
+                        // Call the despawn method
+                        shinyHunter.ClearAllFromStash(bot);
+
+                        // Reload the stashed shinies
+                        shinyHunter.LoadStashedShinies(bot);
+
+                        // Update the display
+                        DisplayStashedShinies();
+
+                        MessageBox.Show(
+                            $"All Pokémon have been cleared from the stash.",
+                            "Success",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(
+                            $"Error clearing shiny from stash: {ex.Message}",
+                            "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
             }
         }
 
