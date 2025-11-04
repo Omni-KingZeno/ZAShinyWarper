@@ -35,6 +35,7 @@ namespace ZAShinyWarper
         public ZAWarpWindow()
         {
             InitializeComponent();
+            SetupListBox();
             CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
             Application.ApplicationExit += (s, e) => CleanUpBot();
             SpriteName.AllowShinySprite = true;
@@ -343,6 +344,105 @@ namespace ZAShinyWarper
             }
         }
 
+        private void OnClickExport(object sender, EventArgs e)
+        {
+            if (lBCoords.Items.Count == 0)
+            {
+                MessageBox.Show("No items to export.", "Export",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using SaveFileDialog saveDialog = new();
+            saveDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            saveDialog.DefaultExt = "txt";
+            saveDialog.FileName = "coordinates.txt";
+
+            if (saveDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    using (StreamWriter writer = new(saveDialog.FileName))
+                    {
+                        foreach (var item in lBCoords.Items)
+                        {
+                            writer.WriteLine(item.ToString());
+                        }
+                    }
+                    MessageBox.Show($"Successfully exported {lBCoords.Items.Count} items.",
+                        "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error exporting items: {ex.Message}",
+                        "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void OnClickImport(object sender, EventArgs e)
+        {
+            using OpenFileDialog openDialog = new();
+            openDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            openDialog.DefaultExt = "txt";
+            if (openDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string[] lines = File.ReadAllLines(openDialog.FileName);
+
+                    bool shouldClear = true; // Likely to always clear
+
+                    // Only ask if there are existing items
+                    if (positions.Count > 0)
+                    {
+                        DialogResult result = MessageBox.Show(this,
+                            "Do you want to overwrite the current coordinates?\n\n" +
+                            "Yes = Overwrite existing\n" +
+                            "No = Add to existing\n",
+                            "Import Options",
+                            MessageBoxButtons.YesNoCancel,
+                            MessageBoxIcon.Question);
+
+                        if (result == DialogResult.Cancel)
+                        {
+                            return; // User cancelled
+                        }
+
+                        shouldClear = (result == DialogResult.Yes);
+                    }
+
+                    // If overwrite, clear existing data
+                    if (shouldClear)
+                    {
+                        lBCoords.Items.Clear();
+                        positions.Clear();
+                    }
+
+                    // Import the data
+                    foreach (string line in lines)
+                    {
+                        if (!string.IsNullOrWhiteSpace(line))
+                        {
+                            Vector3 vector = Vector3.FromString(line);
+                            lBCoords.Items.Add(vector);
+                            positions.Add(vector);
+                        }
+                    }
+
+                    string action = shouldClear ? "imported" : "added";
+                    MessageBox.Show($"Successfully {action} {lines.Length} items.",
+                        "Import Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error importing items: {ex.Message}",
+                        "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            SaveAllAndUpdateUI();
+        }
+
         private void CenterFormOnParent(Form childForm)
         {
             childForm.StartPosition = FormStartPosition.Manual;
@@ -478,7 +578,7 @@ namespace ZAShinyWarper
             BeginInvoke(new Action(() => SaveConfig()));
         }
 
-        private void OnAlphaCheckedChanged(object sender, EventArgs e)
+        private void OnAlphaCheckedChanged(object? sender, EventArgs e)
         {
             if (cBIsAlpha.Checked)
             {
@@ -494,6 +594,8 @@ namespace ZAShinyWarper
                 nUDScaleMax.Enabled = true;
                 nUDScaleMax.Value = 255;
             }
+
+            OnConfigurationChange(sender, e);
         }
 
         private void SaveConfig()
@@ -598,7 +700,7 @@ namespace ZAShinyWarper
             btnWebhookSettings.Enabled = enabled;
             btnWarp.Enabled = enabled;
             btnResetFilters.Enabled = enabled;
-            btnExport.Enabled = enabled;
+            btnExportSets.Enabled = enabled;
 
             if (wifi)
             {
@@ -911,7 +1013,7 @@ namespace ZAShinyWarper
             }
         }
 
-        private void OnClickExport(object sender, EventArgs e)
+        private void OnClickExportSets(object sender, EventArgs e)
         {
             if (shinyHunter.StashedShinies.Count == 0)
             {
@@ -1063,6 +1165,103 @@ namespace ZAShinyWarper
             if (form.ShowDialog() == DialogResult.OK)
             {
                 SaveConfig();
+            }
+        }
+
+        private void SetupListBox()
+        {
+            ContextMenuStrip contextMenu = new();
+
+            ToolStripMenuItem copyItem = new("Copy");
+            copyItem.Click += CopyLineItem;
+            contextMenu.Items.Add(copyItem);
+
+            ToolStripMenuItem pasteAboveItem = new("Insert Above");
+            pasteAboveItem.Click += PasteAboveItem;
+            contextMenu.Items.Add(pasteAboveItem);
+
+            ToolStripMenuItem pasteBelowItem = new("Insert Below");
+            pasteBelowItem.Click += PasteBelowItem;
+            contextMenu.Items.Add(pasteBelowItem);
+
+            lBCoords.ContextMenuStrip = contextMenu;
+            lBCoords.MouseDown += CoordsRightClick;
+        }
+
+        private void CopyLineItem(object? sender, EventArgs e)
+        {
+            if (lBCoords.SelectedItem != null)
+            {
+                string? lineToCopy = lBCoords.SelectedItem.ToString();
+                Clipboard.SetText(lineToCopy);
+            }
+        }
+
+        private void PasteAboveItem(object? sender, EventArgs e)
+        {
+            if (Clipboard.ContainsText())
+            {
+                try
+                {
+                    string clipboardText = Clipboard.GetText().Trim();
+                    Vector3 vector = Vector3.FromString(clipboardText);
+
+                    int insertIndex = lBCoords.SelectedIndex;
+                    lBCoords.Items.Insert(insertIndex, vector);
+                    positions.Insert(insertIndex, vector);
+                    SaveAllAndUpdateUI();
+                    lBCoords.SelectedIndex = insertIndex;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error pasting item: {ex.Message}",
+                        "Paste Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No text in clipboard to paste.", "Paste",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void PasteBelowItem(object? sender, EventArgs e)
+        {
+            if (Clipboard.ContainsText())
+            {
+                try
+                {
+                    string clipboardText = Clipboard.GetText().Trim();
+                    Vector3 vector = Vector3.FromString(clipboardText);
+
+                    int insertIndex = lBCoords.SelectedIndex;
+                    lBCoords.Items.Insert(insertIndex + 1, vector);
+                    positions.Insert(insertIndex + 1, vector);
+                    SaveAllAndUpdateUI();
+                    lBCoords.SelectedIndex = insertIndex;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error pasting item: {ex.Message}",
+                        "Paste Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No text in clipboard to paste.", "Paste",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void CoordsRightClick(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                int index = lBCoords.IndexFromPoint(e.Location);
+                if (index >= 0 && index < lBCoords.Items.Count)
+                {
+                    lBCoords.SelectedIndex = index;
+                }
             }
         }
     }

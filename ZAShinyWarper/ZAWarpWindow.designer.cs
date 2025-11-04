@@ -37,6 +37,7 @@ namespace ZAShinyWarper
             tB_IP = new TextBox();
             btnConnect = new Button();
             gBControls = new GroupBox();
+            btnMoveUp = new Button();
             btnDelete = new Button();
             btnRestore = new Button();
             btnSave = new Button();
@@ -97,9 +98,10 @@ namespace ZAShinyWarper
             btnScreenOn = new Button();
             btnScreenOff = new Button();
             ShinyInfo = new ToolTip(components);
-            btnExport = new Button();
+            btnExportSets = new Button();
             btnWebhookSettings = new Button();
-            btnMoveUp = new Button();
+            btnImportCoords = new Button();
+            btnExportCoords = new Button();
             gBControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nUDDistance).BeginInit();
             gBShinyHunt.SuspendLayout();
@@ -155,6 +157,8 @@ namespace ZAShinyWarper
             // 
             // gBControls
             // 
+            gBControls.Controls.Add(btnExportCoords);
+            gBControls.Controls.Add(btnImportCoords);
             gBControls.Controls.Add(btnMoveUp);
             gBControls.Controls.Add(btnDelete);
             gBControls.Controls.Add(btnRestore);
@@ -175,6 +179,18 @@ namespace ZAShinyWarper
             gBControls.TabIndex = 3;
             gBControls.TabStop = false;
             gBControls.Text = "Editing";
+            // 
+            // btnMoveUp
+            // 
+            btnMoveUp.Font = new Font("Segoe UI", 10F);
+            btnMoveUp.Location = new Point(108, 285);
+            btnMoveUp.Margin = new Padding(4, 3, 4, 3);
+            btnMoveUp.Name = "btnMoveUp";
+            btnMoveUp.Size = new Size(88, 27);
+            btnMoveUp.TabIndex = 18;
+            btnMoveUp.Text = "↨";
+            btnMoveUp.UseVisualStyleBackColor = true;
+            btnMoveUp.Click += OnClickUp;
             // 
             // btnDelete
             // 
@@ -356,7 +372,6 @@ namespace ZAShinyWarper
             cBIsAlpha.TabIndex = 32;
             cBIsAlpha.UseVisualStyleBackColor = true;
             cBIsAlpha.CheckedChanged += OnAlphaCheckedChanged;
-            cBIsAlpha.CheckedChanged += OnConfigurationChange;
             // 
             // pBAlpha
             // 
@@ -824,16 +839,16 @@ namespace ZAShinyWarper
             ShinyInfo.InitialDelay = 750;
             ShinyInfo.ReshowDelay = 1000;
             // 
-            // btnExport
+            // btnExportSets
             // 
-            btnExport.Enabled = false;
-            btnExport.Location = new Point(552, 549);
-            btnExport.Name = "btnExport";
-            btnExport.Size = new Size(198, 27);
-            btnExport.TabIndex = 14;
-            btnExport.Text = "Export Sets";
-            btnExport.UseVisualStyleBackColor = true;
-            btnExport.Click += OnClickExport;
+            btnExportSets.Enabled = false;
+            btnExportSets.Location = new Point(552, 549);
+            btnExportSets.Name = "btnExport";
+            btnExportSets.Size = new Size(198, 27);
+            btnExportSets.TabIndex = 14;
+            btnExportSets.Text = "Export Sets";
+            btnExportSets.UseVisualStyleBackColor = true;
+            btnExportSets.Click += OnClickExportSets;
             // 
             // btnWebhookSettings
             // 
@@ -846,17 +861,27 @@ namespace ZAShinyWarper
             btnWebhookSettings.UseVisualStyleBackColor = true;
             btnWebhookSettings.Click += OnClickWebhookSettings;
             // 
-            // btnMoveUp
+            // btnImportCoords
             // 
-            btnMoveUp.Font = new Font("Segoe UI", 10F);
-            btnMoveUp.Location = new Point(108, 285);
-            btnMoveUp.Margin = new Padding(4, 3, 4, 3);
-            btnMoveUp.Name = "btnMoveUp";
-            btnMoveUp.Size = new Size(88, 27);
-            btnMoveUp.TabIndex = 18;
-            btnMoveUp.Text = "↨";
-            btnMoveUp.UseVisualStyleBackColor = true;
-            btnMoveUp.Click += OnClickUp;
+            btnImportCoords.Location = new Point(12, 199);
+            btnImportCoords.Margin = new Padding(4, 3, 4, 3);
+            btnImportCoords.Name = "btnImportCoords";
+            btnImportCoords.Size = new Size(135, 27);
+            btnImportCoords.TabIndex = 19;
+            btnImportCoords.Text = "Import";
+            btnImportCoords.UseVisualStyleBackColor = true;
+            btnImportCoords.Click += OnClickImport;
+            // 
+            // btnExportCoords
+            // 
+            btnExportCoords.Location = new Point(155, 199);
+            btnExportCoords.Margin = new Padding(4, 3, 4, 3);
+            btnExportCoords.Name = "btnExportCoords";
+            btnExportCoords.Size = new Size(137, 27);
+            btnExportCoords.TabIndex = 20;
+            btnExportCoords.Text = "Export";
+            btnExportCoords.UseVisualStyleBackColor = true;
+            btnExportCoords.Click += OnClickExport;
             // 
             // ZAWarpWindow
             // 
@@ -864,7 +889,7 @@ namespace ZAShinyWarper
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(768, 594);
             Controls.Add(btnWebhookSettings);
-            Controls.Add(btnExport);
+            Controls.Add(btnExportSets);
             Controls.Add(btnScreenOff);
             Controls.Add(btnScreenOn);
             Controls.Add(gBStashedShiny);
@@ -973,12 +998,14 @@ namespace ZAShinyWarper
         private Button btnScreenOn;
         private Button btnScreenOff;
         private ToolTip ShinyInfo;
-        private Button btnExport;
+        private Button btnExportSets;
         private Button btnWebhookSettings;
         private Button btnResetFilters;
         private PictureBox pBAlpha;
         private CheckBox cBIsAlpha;
         private Button btnMoveUp;
+        private Button btnExportCoords;
+        private Button btnImportCoords;
     }
 }
 
