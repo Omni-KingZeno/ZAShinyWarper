@@ -4,6 +4,7 @@ For warping or shiny hunting with your character in Pokemon Legends: Z-A.
 Requires a hacked Switch console running either [sys-botbase](https://github.com/olliz0r/sys-botbase/releases) or [usb-botbase](https://github.com/Koi-3088/USB-Botbase/releases).
 
 ![Main window](ZAShinyWarper_Window.png?raw=true "The program itself")
+![Webhook window](ZAShinyWarper_Webhook.png?raw=true "Webhook Settings")
 ![Success window](ZAShinyWarper_Success.png?raw=true "Finding a shiny")
 
 ### Shiny hunting setup
