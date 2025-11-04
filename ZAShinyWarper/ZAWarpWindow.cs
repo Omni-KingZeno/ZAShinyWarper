@@ -36,7 +36,7 @@ namespace ZAShinyWarper
         public ZAWarpWindow()
         {
             InitializeComponent();
-            SetupListBox();
+            SetupListBox();           
             CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
             Application.ApplicationExit += (s, e) => CleanUpBot();
             SpriteName.AllowShinySprite = true;
@@ -851,8 +851,6 @@ namespace ZAShinyWarper
                     var newShinies = shinyHunter.DifferentShinies;
                     foreach (var pk in newShinies)
                     {
-                        await SendWebhook(pk.ToShowdownString(), pk.PKM);
-
                         var matchesFilter = filter.MatchesFilter(pk.PKM);
 
                         if (matchesFilter)
@@ -861,6 +859,7 @@ namespace ZAShinyWarper
                         }
 
                         var shouldStop = false;
+                        var shouldSendEmbed = true;
                         var stopMessage = string.Empty;
 
                         if (matchesFilter && action == ShinyFoundAction.StopOnFound) // Found what we wanted. Stop warping, go catch it
@@ -868,10 +867,22 @@ namespace ZAShinyWarper
                             shouldStop = true;
                             stopMessage = $"A Shiny {(pk.PKM.IsAlpha ? "Alpha " : "")}matching the filter has been found after {currentWarps} attempts!\r\nStopping warping.\r\n\r\n{pk}\r\n";
                         }
-                        else if (matchesFilter && cacheIsFull && (action == ShinyFoundAction.StopAtFullCache || action == ShinyFoundAction.CacheAndContinue)) // Found what we wanted in this run and the cache is full
+                        else if (matchesFilter && action == ShinyFoundAction.ClearCacheAndContinue) // Found what we wanted, keep going
+                        {
+                            MessageBox.Show($"We Found A Match after {currentWarps} attempts! Let's keep going to find more!\r\n\r\n{pk}\r\n", "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        else if (matchesFilter && cacheIsFull && action != ShinyFoundAction.StopOnFound) // Found what we wanted in this run and the cache is full
                         {
                             shouldStop = true;
                             stopMessage = $"A Shiny {(pk.PKM.IsAlpha ? "Alpha " : "")}matching the filter has been found after {currentWarps} attempts and your stash is now full!\r\nStopping warping.\r\n\r\n{pk}\r\n";
+                        }
+                        else if (!matchesFilter && action == ShinyFoundAction.ClearCacheAndContinue) // Does not match filter, clear it out
+                        {
+                            shouldSendEmbed = false;
+                            int index = shinyHunter.StashedShinies.IndexOf(pk);
+                            shinyHunter.RemoveShinyFromCache(bot, index); // keep removing until we have a whole cache of matches
+                            StashList[index].PerformSafely(() => StashList[index].Image = null);
+                            DisplayStashedShinies();
                         }
                         else if (!matchesFilter && cacheIsFull) // Does not match filter but the cache is full
                         {
@@ -901,6 +912,9 @@ namespace ZAShinyWarper
                         {
                             StopWarping(stopMessage);
                         }
+
+                        if (shouldSendEmbed)
+                            await SendWebhook(pk.ToShowdownString(), pk.PKM);
                     }
 
                     // Helper methods

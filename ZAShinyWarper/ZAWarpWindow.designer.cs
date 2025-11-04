@@ -577,6 +577,7 @@ namespace ZAShinyWarper
             // 
             // cBIVSpe
             // 
+            cBIVSpe.DropDownStyle = ComboBoxStyle.DropDownList;
             cBIVSpe.FormattingEnabled = true;
             cBIVSpe.Location = new Point(140, 448);
             cBIVSpe.Name = "cBIVSpe";
@@ -585,6 +586,7 @@ namespace ZAShinyWarper
             // 
             // cBIVSpD
             // 
+            cBIVSpD.DropDownStyle = ComboBoxStyle.DropDownList;
             cBIVSpD.FormattingEnabled = true;
             cBIVSpD.Location = new Point(77, 448);
             cBIVSpD.Name = "cBIVSpD";
@@ -594,6 +596,7 @@ namespace ZAShinyWarper
             // 
             // cBIVSpA
             // 
+            cBIVSpA.DropDownStyle = ComboBoxStyle.DropDownList;
             cBIVSpA.FormattingEnabled = true;
             cBIVSpA.Location = new Point(14, 448);
             cBIVSpA.Name = "cBIVSpA";
@@ -630,6 +633,7 @@ namespace ZAShinyWarper
             // 
             // cBIVDef
             // 
+            cBIVDef.DropDownStyle = ComboBoxStyle.DropDownList;
             cBIVDef.FormattingEnabled = true;
             cBIVDef.Location = new Point(140, 396);
             cBIVDef.Name = "cBIVDef";
@@ -639,6 +643,7 @@ namespace ZAShinyWarper
             // 
             // cBIVAtk
             // 
+            cBIVAtk.DropDownStyle = ComboBoxStyle.DropDownList;
             cBIVAtk.FormattingEnabled = true;
             cBIVAtk.Location = new Point(77, 396);
             cBIVAtk.Name = "cBIVAtk";
@@ -648,6 +653,7 @@ namespace ZAShinyWarper
             // 
             // cBIVHP
             // 
+            cBIVHP.DropDownStyle = ComboBoxStyle.DropDownList;
             cBIVHP.FormattingEnabled = true;
             cBIVHP.Location = new Point(14, 396);
             cBIVHP.Name = "cBIVHP";
@@ -706,6 +712,7 @@ namespace ZAShinyWarper
             // 
             // cBWhenShinyFound
             // 
+            cBWhenShinyFound.DropDownStyle = ComboBoxStyle.DropDownList;
             cBWhenShinyFound.FormattingEnabled = true;
             cBWhenShinyFound.Location = new Point(8, 40);
             cBWhenShinyFound.Margin = new Padding(4, 3, 4, 3);
@@ -940,7 +947,7 @@ namespace ZAShinyWarper
             MaximizeBox = false;
             Name = "ZAWarpWindow";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Z-A Shiny Warper by Berichan V2";
+            Text = "Z-A Shiny Warper by Berichan v3";
             Load += LoadDefaults;
             gBControls.ResumeLayout(false);
             gBControls.PerformLayout();
