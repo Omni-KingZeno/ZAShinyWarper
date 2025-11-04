@@ -286,6 +286,30 @@ namespace ZAShinyWarper
             MovePlayer(-1, 0);
         }
 
+        private void OnClickMoveItemUp(object sender, EventArgs e)
+        {
+            if (lBCoords.SelectedIndex > 0)
+            {
+                int index = lBCoords.SelectedIndex;
+                (positions[index - 1], positions[index]) = (positions[index], positions[index - 1]);
+                SaveAllAndUpdateUI();
+                lBCoords.SelectedIndex = index - 1;
+            }
+        }
+
+        private void OnClickMoveItemDown(object sender, EventArgs e)
+        {
+            if (lBCoords.SelectedIndex >= 0 &&
+                lBCoords.SelectedIndex < lBCoords.Items.Count - 1)
+            {
+                int index = lBCoords.SelectedIndex;
+                (positions[index + 1], positions[index]) = (positions[index], positions[index + 1]);
+                SaveAllAndUpdateUI();
+                lBCoords.SelectedIndex = index + 1;
+            }
+        }
+
+
         private void OnClickUp(object sender, EventArgs e)
         {
             MovePlayerZ();
