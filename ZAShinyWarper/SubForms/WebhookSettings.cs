@@ -1,4 +1,9 @@
-﻿namespace ZAShinyWarper
+﻿using System.Net.Http.Json;
+using System.Reflection;
+using System.Text.Json;
+using PKHeX.Core;
+
+namespace ZAShinyWarper
 {
     public partial class WebhookForm : Form
     {
@@ -135,6 +140,68 @@
         {
             DialogResult = DialogResult.Cancel;
             Close();
+        }
+
+        private void OnClickTest(object sender, EventArgs e)
+        {
+            if (dGWebhookSettings.CurrentRow != null && dGWebhookSettings.CurrentRow.Index >= 0)
+            {
+                string webhookAddr = dGWebhookSettings.CurrentRow.Cells["webhookAddress"].Value?.ToString() ?? "";
+                string message = dGWebhookSettings.CurrentRow.Cells["messageContents"].Value?.ToString() ?? "";
+                if (string.IsNullOrWhiteSpace(webhookAddr))
+                {
+                    MessageBox.Show("Please enter a valid webhook address to test.", "Invalid Webhook", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                try
+                {
+                    var pk = LoadPA9();
+                    using HttpClient client = new();
+                    string imageUrl = $"https://raw.githubusercontent.com/Omni-KingZeno/Pokemon-Sprites/refs/heads/main/Shiny/zygarde-10.png";
+
+                    var embed = new
+                    {
+                        title = $"Shiny Alpha Zygarde Found!?!?",
+                        description = ShowdownParsing.GetShowdownText(pk),
+                        image = new { url = imageUrl.Trim() },
+                        footer = new
+                        {
+                            text = "This is only a test",
+                        }
+                    };
+                    var payload = new
+                    {
+                        content = message,
+                        embeds = new[] { embed }
+                    };
+                    var json = JsonSerializer.Serialize(payload);
+
+
+                    var response = client.PostAsJsonAsync(webhookAddr, payload).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Test webhook sent successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Failed to send test webhook. Status Code: {response.StatusCode}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred while sending the test webhook:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        public static PA9 LoadPA9()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "ZAShinyWarper.Resources.test.pa9";
+            using Stream stream = assembly.GetManifestResourceStream(resourceName) ?? throw new FileNotFoundException($"Resource {resourceName} not found");
+            byte[] data = new byte[stream.Length];
+            stream.ReadExactly(data);
+            return new PA9(data);
         }
     }
 }

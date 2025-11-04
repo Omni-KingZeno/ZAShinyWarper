@@ -38,6 +38,7 @@ namespace ZAShinyWarper
             btnCancel = new Button();
             btnRemoveRow = new Button();
             btnAddRow = new Button();
+            btnTest = new Button();
             ((System.ComponentModel.ISupportInitialize)programConfigBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dGWebhookSettings).BeginInit();
             SuspendLayout();
@@ -53,20 +54,20 @@ namespace ZAShinyWarper
             dGWebhookSettings.AllowUserToResizeRows = false;
             dGWebhookSettings.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dGWebhookSettings.Dock = DockStyle.Top;
-            dGWebhookSettings.Location = new System.Drawing.Point(0, 0);
+            dGWebhookSettings.Location = new Point(0, 0);
             dGWebhookSettings.MultiSelect = false;
             dGWebhookSettings.Name = "dGWebhookSettings";
             dGWebhookSettings.RowHeadersVisible = false;
             dGWebhookSettings.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             dGWebhookSettings.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dGWebhookSettings.Size = new System.Drawing.Size(534, 233);
+            dGWebhookSettings.Size = new Size(534, 233);
             dGWebhookSettings.TabIndex = 0;
             // 
             // btnSave
             // 
-            btnSave.Location = new System.Drawing.Point(366, 251);
+            btnSave.Location = new Point(366, 251);
             btnSave.Name = "btnSave";
-            btnSave.Size = new System.Drawing.Size(75, 23);
+            btnSave.Size = new Size(75, 23);
             btnSave.TabIndex = 1;
             btnSave.Text = "Save";
             btnSave.UseVisualStyleBackColor = true;
@@ -74,9 +75,9 @@ namespace ZAShinyWarper
             // 
             // btnCancel
             // 
-            btnCancel.Location = new System.Drawing.Point(447, 251);
+            btnCancel.Location = new Point(447, 251);
             btnCancel.Name = "btnCancel";
-            btnCancel.Size = new System.Drawing.Size(75, 23);
+            btnCancel.Size = new Size(75, 23);
             btnCancel.TabIndex = 2;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
@@ -84,9 +85,9 @@ namespace ZAShinyWarper
             // 
             // btnRemoveRow
             // 
-            btnRemoveRow.Location = new System.Drawing.Point(84, 239);
+            btnRemoveRow.Location = new Point(84, 239);
             btnRemoveRow.Name = "btnRemoveRow";
-            btnRemoveRow.Size = new System.Drawing.Size(75, 23);
+            btnRemoveRow.Size = new Size(75, 23);
             btnRemoveRow.TabIndex = 4;
             btnRemoveRow.Text = "Remove";
             btnRemoveRow.UseVisualStyleBackColor = true;
@@ -94,19 +95,30 @@ namespace ZAShinyWarper
             // 
             // btnAddRow
             // 
-            btnAddRow.Location = new System.Drawing.Point(3, 239);
+            btnAddRow.Location = new Point(3, 239);
             btnAddRow.Name = "btnAddRow";
-            btnAddRow.Size = new System.Drawing.Size(75, 23);
+            btnAddRow.Size = new Size(75, 23);
             btnAddRow.TabIndex = 3;
             btnAddRow.Text = "Add";
             btnAddRow.UseVisualStyleBackColor = true;
             btnAddRow.Click += OnClickAdd;
             // 
+            // btnTest
+            // 
+            btnTest.Location = new Point(165, 239);
+            btnTest.Name = "btnTest";
+            btnTest.Size = new Size(75, 23);
+            btnTest.TabIndex = 5;
+            btnTest.Text = "Test";
+            btnTest.UseVisualStyleBackColor = true;
+            btnTest.Click += OnClickTest;
+            // 
             // WebhookForm
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(534, 290);
+            ClientSize = new Size(534, 290);
+            Controls.Add(btnTest);
             Controls.Add(btnRemoveRow);
             Controls.Add(btnAddRow);
             Controls.Add(btnCancel);
@@ -128,5 +140,6 @@ namespace ZAShinyWarper
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnRemoveRow;
         private System.Windows.Forms.Button btnAddRow;
+        private Button btnTest;
     }
 }
