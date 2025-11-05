@@ -36,7 +36,7 @@ namespace ZAShinyWarper
         public ZAWarpWindow()
         {
             InitializeComponent();
-            SetupListBox();           
+            SetupListBox();
             CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
             Application.ApplicationExit += (s, e) => CleanUpBot();
             SpriteName.AllowShinySprite = true;
@@ -50,6 +50,16 @@ namespace ZAShinyWarper
             foreach (var item in Enum.GetValues<ShinyFoundAction>())
                 cBWhenShinyFound.Items.Add(item);
             cBWhenShinyFound.SelectedIndex = 0;
+
+            // Forced Weather
+            foreach (var item in Enum.GetValues<Weather>())
+                cBForcedWeather.Items.Add(item);
+            cBForcedWeather.SelectedIndex = -1;
+
+            // Forced Time of Day
+            foreach (var item in Enum.GetValues<TimeOfDay>())
+                cBForcedTimeOfDay.Items.Add(item);
+            cBForcedTimeOfDay.SelectedIndex = -1;
 
             // Species
             cBSpecies.Items.Add("Any");
@@ -309,7 +319,6 @@ namespace ZAShinyWarper
                 lBCoords.SelectedIndex = index + 1;
             }
         }
-
 
         private void OnClickUp(object sender, EventArgs e)
         {
@@ -633,6 +642,8 @@ namespace ZAShinyWarper
                 programConfig.CamMove = nUDCamMove.Value;
                 programConfig.SaveFreq = nUDSaveFreq.Value;
                 programConfig.WhenShinyFound = cBWhenShinyFound.SelectedIndex;
+                programConfig.ForcedWeather = cBForcedWeather.SelectedIndex;
+                programConfig.ForcedTimeOfDay = cBForcedTimeOfDay.SelectedIndex;
                 programConfig.IVHP = cBIVHP.SelectedIndex;
                 programConfig.IVAtk = cBIVAtk.SelectedIndex;
                 programConfig.IVDef = cBIVDef.SelectedIndex;
@@ -696,6 +707,8 @@ namespace ZAShinyWarper
                 tB_IP.Text = programConfig.IPAddress;
                 positions = [.. programConfig.Positions];
                 cBWhenShinyFound.SelectedIndex = programConfig.WhenShinyFound;
+                cBForcedWeather.SelectedIndex = programConfig.ForcedWeather;
+                cBForcedTimeOfDay.SelectedIndex = programConfig.ForcedTimeOfDay;
                 nUDCheckTime.Value = programConfig.SpawnCheckTime;
                 nUDCamMove.Value = programConfig.CamMove;
                 nUDSaveFreq.Value = programConfig.SaveFreq;
@@ -774,10 +787,12 @@ namespace ZAShinyWarper
             btnWarp.PerformSafely(() => btnWarp.Enabled = enabled);
         }
 
-        private static void CleanUpBot()
+        private void CleanUpBot()
         {
             if (bot != null && bot.Connected)
             {
+                shinyHunter.SetWeather(bot, Weather.None);
+                shinyHunter.SetTime(bot, TimeOfDay.None);
                 bot.SendBytes(Encoding.ASCII.GetBytes("setStick RIGHT 0 0\r\n"));
                 bot.SendBytes(Encoding.ASCII.GetBytes("detachController\r\n"));
             }
@@ -804,6 +819,8 @@ namespace ZAShinyWarper
                 warping = false;
                 SetFiltersEnableState(true);
                 btnWarp.PerformSafely(() => btnWarp.Text = "Start Warping");
+                shinyHunter.UnlockWeather();
+                shinyHunter.UnlockTime();
                 CleanUpBot();
                 return;
             }
@@ -826,6 +843,10 @@ namespace ZAShinyWarper
             matchingShinyFound = false;
             SetFiltersEnableState(false);
             btnWarp.PerformSafely(() => btnWarp.Text = "Warping. Click to end.");
+
+            // Set Time and Weather
+            shinyHunter.SetTime(bot, (TimeOfDay)cBForcedTimeOfDay.SelectedItem!);
+            shinyHunter.SetWeather(bot, (Weather)cBForcedWeather.SelectedItem!);
 
             // Rotate camera for spawns
             if (camSpeed != 0)
@@ -881,6 +902,7 @@ namespace ZAShinyWarper
                             shouldSendEmbed = false;
                             int index = shinyHunter.StashedShinies.IndexOf(pk);
                             shinyHunter.RemoveShinyFromCache(bot, index); // keep removing until we have a whole cache of matches
+                            shinyHunter.StashedShinies.RemoveAt(index);
                             StashList[index].PerformSafely(() => StashList[index].Image = null);
                             DisplayStashedShinies();
                         }

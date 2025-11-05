@@ -55,6 +55,11 @@ namespace ZAShinyWarper
             lblThanks = new Label();
             btnConnectUSB = new Button();
             gBShinyHunt = new GroupBox();
+            cBForcedTimeOfDay = new ComboBox();
+            lblTimeOfDay = new Label();
+            cBForcedWeather = new ComboBox();
+            lblWeather = new Label();
+            lblScale = new Label();
             cBIsAlpha = new CheckBox();
             pBAlpha = new PictureBox();
             btnResetFilters = new Button();
@@ -80,7 +85,6 @@ namespace ZAShinyWarper
             cBIVDef = new ComboBox();
             cBIVAtk = new ComboBox();
             cBIVHP = new ComboBox();
-            lblIV = new Label();
             cBSpecies = new CheckedListBox();
             btnResetSpecies = new Button();
             lblSpecies = new Label();
@@ -90,6 +94,7 @@ namespace ZAShinyWarper
             btnWarp = new Button();
             gBStashedShiny = new GroupBox();
             StashedShiny1 = new PictureBox();
+            btnExportSets = new Button();
             StashedShiny2 = new PictureBox();
             StashedShiny3 = new PictureBox();
             StashedShiny4 = new PictureBox();
@@ -102,7 +107,6 @@ namespace ZAShinyWarper
             btnScreenOn = new Button();
             btnScreenOff = new Button();
             ShinyInfo = new ToolTip(components);
-            btnExportSets = new Button();
             btnWebhookSettings = new Button();
             gBControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nUDDistance).BeginInit();
@@ -376,6 +380,11 @@ namespace ZAShinyWarper
             // 
             // gBShinyHunt
             // 
+            gBShinyHunt.Controls.Add(cBForcedTimeOfDay);
+            gBShinyHunt.Controls.Add(lblTimeOfDay);
+            gBShinyHunt.Controls.Add(cBForcedWeather);
+            gBShinyHunt.Controls.Add(lblWeather);
+            gBShinyHunt.Controls.Add(lblScale);
             gBShinyHunt.Controls.Add(cBIsAlpha);
             gBShinyHunt.Controls.Add(pBAlpha);
             gBShinyHunt.Controls.Add(btnResetFilters);
@@ -401,7 +410,6 @@ namespace ZAShinyWarper
             gBShinyHunt.Controls.Add(cBIVDef);
             gBShinyHunt.Controls.Add(cBIVAtk);
             gBShinyHunt.Controls.Add(cBIVHP);
-            gBShinyHunt.Controls.Add(lblIV);
             gBShinyHunt.Controls.Add(cBSpecies);
             gBShinyHunt.Controls.Add(btnResetSpecies);
             gBShinyHunt.Controls.Add(lblSpecies);
@@ -413,16 +421,68 @@ namespace ZAShinyWarper
             gBShinyHunt.Margin = new Padding(4, 3, 4, 3);
             gBShinyHunt.Name = "gBShinyHunt";
             gBShinyHunt.Padding = new Padding(4, 3, 4, 3);
-            gBShinyHunt.Size = new Size(212, 567);
+            gBShinyHunt.Size = new Size(228, 567);
             gBShinyHunt.TabIndex = 6;
             gBShinyHunt.TabStop = false;
             gBShinyHunt.Text = "Shiny Hunting";
             // 
+            // cBForcedTimeOfDay
+            // 
+            cBForcedTimeOfDay.DropDownStyle = ComboBoxStyle.DropDownList;
+            cBForcedTimeOfDay.FormattingEnabled = true;
+            cBForcedTimeOfDay.Location = new Point(13, 131);
+            cBForcedTimeOfDay.Margin = new Padding(4, 3, 4, 3);
+            cBForcedTimeOfDay.Name = "cBForcedTimeOfDay";
+            cBForcedTimeOfDay.Size = new Size(204, 23);
+            cBForcedTimeOfDay.TabIndex = 37;
+            cBForcedTimeOfDay.SelectedIndexChanged += OnConfigurationChange; ;
+            // 
+            // lblTimeOfDay
+            // 
+            lblTimeOfDay.AutoSize = true;
+            lblTimeOfDay.Location = new Point(13, 111);
+            lblTimeOfDay.Margin = new Padding(4, 0, 4, 0);
+            lblTimeOfDay.Name = "lblTimeOfDay";
+            lblTimeOfDay.Size = new Size(108, 15);
+            lblTimeOfDay.TabIndex = 36;
+            lblTimeOfDay.Text = "Forced Time of day";
+            // 
+            // cBForcedWeather
+            // 
+            cBForcedWeather.DropDownStyle = ComboBoxStyle.DropDownList;
+            cBForcedWeather.FormattingEnabled = true;
+            cBForcedWeather.Location = new Point(13, 86);
+            cBForcedWeather.Margin = new Padding(4, 3, 4, 3);
+            cBForcedWeather.Name = "cBForcedWeather";
+            cBForcedWeather.Size = new Size(204, 23);
+            cBForcedWeather.TabIndex = 35;
+            cBForcedWeather.SelectedIndexChanged += OnConfigurationChange;
+            // 
+            // lblWeather
+            // 
+            lblWeather.AutoSize = true;
+            lblWeather.Location = new Point(13, 66);
+            lblWeather.Margin = new Padding(4, 0, 4, 0);
+            lblWeather.Name = "lblWeather";
+            lblWeather.Size = new Size(90, 15);
+            lblWeather.TabIndex = 34;
+            lblWeather.Text = "Forced Weather";
+            // 
+            // lblScale
+            // 
+            lblScale.AutoSize = true;
+            lblScale.Location = new Point(85, 504);
+            lblScale.Name = "lblScale";
+            lblScale.Size = new Size(37, 15);
+            lblScale.TabIndex = 33;
+            lblScale.Text = "Scale:";
+            // 
             // cBIsAlpha
             // 
             cBIsAlpha.AutoSize = true;
-            cBIsAlpha.Location = new Point(51, 493);
+            cBIsAlpha.Location = new Point(48, 503);
             cBIsAlpha.Name = "cBIsAlpha";
+            cBIsAlpha.RightToLeft = RightToLeft.Yes;
             cBIsAlpha.Size = new Size(15, 14);
             cBIsAlpha.TabIndex = 32;
             cBIsAlpha.UseVisualStyleBackColor = true;
@@ -432,7 +492,7 @@ namespace ZAShinyWarper
             // 
             pBAlpha.BackgroundImageLayout = ImageLayout.None;
             pBAlpha.Image = Properties.Resources.alpha;
-            pBAlpha.Location = new Point(14, 481);
+            pBAlpha.Location = new Point(14, 492);
             pBAlpha.Name = "pBAlpha";
             pBAlpha.Size = new Size(31, 32);
             pBAlpha.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -444,7 +504,7 @@ namespace ZAShinyWarper
             btnResetFilters.Enabled = false;
             btnResetFilters.Location = new Point(14, 533);
             btnResetFilters.Name = "btnResetFilters";
-            btnResetFilters.Size = new Size(184, 27);
+            btnResetFilters.Size = new Size(203, 27);
             btnResetFilters.TabIndex = 30;
             btnResetFilters.Text = "Reset Filters";
             btnResetFilters.UseVisualStyleBackColor = true;
@@ -452,10 +512,10 @@ namespace ZAShinyWarper
             // 
             // nUDSaveFreq
             // 
-            nUDSaveFreq.Location = new Point(140, 150);
+            nUDSaveFreq.Location = new Point(145, 241);
             nUDSaveFreq.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nUDSaveFreq.Name = "nUDSaveFreq";
-            nUDSaveFreq.Size = new Size(63, 23);
+            nUDSaveFreq.Size = new Size(72, 23);
             nUDSaveFreq.TabIndex = 28;
             nUDSaveFreq.Value = new decimal(new int[] { 3, 0, 0, 0 });
             nUDSaveFreq.ValueChanged += OnConfigurationChange;
@@ -463,7 +523,7 @@ namespace ZAShinyWarper
             // lblSaveFreq
             // 
             lblSaveFreq.AutoSize = true;
-            lblSaveFreq.Location = new Point(10, 152);
+            lblSaveFreq.Location = new Point(13, 243);
             lblSaveFreq.Name = "lblSaveFreq";
             lblSaveFreq.Size = new Size(90, 15);
             lblSaveFreq.TabIndex = 27;
@@ -472,11 +532,11 @@ namespace ZAShinyWarper
             // nUDCamMove
             // 
             nUDCamMove.Increment = new decimal(new int[] { 1000, 0, 0, 0 });
-            nUDCamMove.Location = new Point(10, 126);
+            nUDCamMove.Location = new Point(15, 217);
             nUDCamMove.Maximum = new decimal(new int[] { 32000, 0, 0, 0 });
             nUDCamMove.Minimum = new decimal(new int[] { 32000, 0, 0, int.MinValue });
             nUDCamMove.Name = "nUDCamMove";
-            nUDCamMove.Size = new Size(193, 23);
+            nUDCamMove.Size = new Size(202, 23);
             nUDCamMove.TabIndex = 26;
             nUDCamMove.Value = new decimal(new int[] { 16000, 0, 0, 0 });
             nUDCamMove.ValueChanged += OnConfigurationChange;
@@ -484,7 +544,7 @@ namespace ZAShinyWarper
             // lblCam
             // 
             lblCam.AutoSize = true;
-            lblCam.Location = new Point(8, 109);
+            lblCam.Location = new Point(13, 200);
             lblCam.Name = "lblCam";
             lblCam.RightToLeft = RightToLeft.No;
             lblCam.Size = new Size(192, 15);
@@ -494,10 +554,10 @@ namespace ZAShinyWarper
             // nUDCheckTime
             // 
             nUDCheckTime.Increment = new decimal(new int[] { 1000, 0, 0, 0 });
-            nUDCheckTime.Location = new Point(8, 83);
+            nUDCheckTime.Location = new Point(13, 172);
             nUDCheckTime.Maximum = new decimal(new int[] { 20000, 0, 0, 0 });
             nUDCheckTime.Name = "nUDCheckTime";
-            nUDCheckTime.Size = new Size(193, 23);
+            nUDCheckTime.Size = new Size(204, 23);
             nUDCheckTime.TabIndex = 24;
             nUDCheckTime.Value = new decimal(new int[] { 2000, 0, 0, 0 });
             nUDCheckTime.ValueChanged += OnConfigurationChange;
@@ -505,7 +565,7 @@ namespace ZAShinyWarper
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(8, 66);
+            label3.Location = new Point(13, 155);
             label3.Name = "label3";
             label3.Size = new Size(133, 15);
             label3.TabIndex = 23;
@@ -513,19 +573,19 @@ namespace ZAShinyWarper
             // 
             // nUDScaleMin
             // 
-            nUDScaleMin.Location = new Point(140, 474);
+            nUDScaleMin.Location = new Point(128, 501);
             nUDScaleMin.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             nUDScaleMin.Name = "nUDScaleMin";
-            nUDScaleMin.Size = new Size(57, 23);
+            nUDScaleMin.Size = new Size(41, 23);
             nUDScaleMin.TabIndex = 22;
             nUDScaleMin.ValueChanged += OnConfigurationChange;
             // 
             // nUDScaleMax
             // 
-            nUDScaleMax.Location = new Point(140, 501);
+            nUDScaleMax.Location = new Point(176, 501);
             nUDScaleMax.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             nUDScaleMax.Name = "nUDScaleMax";
-            nUDScaleMax.Size = new Size(57, 23);
+            nUDScaleMax.Size = new Size(41, 23);
             nUDScaleMax.TabIndex = 22;
             nUDScaleMax.Value = new decimal(new int[] { 255, 0, 0, 0 });
             nUDScaleMax.ValueChanged += OnConfigurationChange;
@@ -533,25 +593,25 @@ namespace ZAShinyWarper
             // lblScaleMin
             // 
             lblScaleMin.AutoSize = true;
-            lblScaleMin.Location = new Point(72, 480);
+            lblScaleMin.Location = new Point(128, 483);
             lblScaleMin.Name = "lblScaleMin";
-            lblScaleMin.Size = new Size(60, 15);
+            lblScaleMin.Size = new Size(28, 15);
             lblScaleMin.TabIndex = 21;
-            lblScaleMin.Text = "Min scale:";
+            lblScaleMin.Text = "Min";
             // 
             // lblScaleMax
             // 
             lblScaleMax.AutoSize = true;
-            lblScaleMax.Location = new Point(72, 503);
+            lblScaleMax.Location = new Point(176, 483);
             lblScaleMax.Name = "lblScaleMax";
-            lblScaleMax.Size = new Size(62, 15);
+            lblScaleMax.Size = new Size(30, 15);
             lblScaleMax.TabIndex = 21;
-            lblScaleMax.Text = "Max scale:";
+            lblScaleMax.Text = "Max";
             // 
             // lblIVSpe
             // 
             lblIVSpe.AutoSize = true;
-            lblIVSpe.Location = new Point(140, 430);
+            lblIVSpe.Location = new Point(152, 435);
             lblIVSpe.Name = "lblIVSpe";
             lblIVSpe.Size = new Size(26, 15);
             lblIVSpe.TabIndex = 19;
@@ -560,7 +620,7 @@ namespace ZAShinyWarper
             // lblIVSpD
             // 
             lblIVSpD.AutoSize = true;
-            lblIVSpD.Location = new Point(77, 430);
+            lblIVSpD.Location = new Point(81, 436);
             lblIVSpD.Name = "lblIVSpD";
             lblIVSpD.Size = new Size(28, 15);
             lblIVSpD.TabIndex = 18;
@@ -569,7 +629,7 @@ namespace ZAShinyWarper
             // lblIVSpA
             // 
             lblIVSpA.AutoSize = true;
-            lblIVSpA.Location = new Point(14, 430);
+            lblIVSpA.Location = new Point(10, 436);
             lblIVSpA.Name = "lblIVSpA";
             lblIVSpA.Size = new Size(28, 15);
             lblIVSpA.TabIndex = 17;
@@ -579,18 +639,18 @@ namespace ZAShinyWarper
             // 
             cBIVSpe.DropDownStyle = ComboBoxStyle.DropDownList;
             cBIVSpe.FormattingEnabled = true;
-            cBIVSpe.Location = new Point(140, 448);
+            cBIVSpe.Location = new Point(152, 454);
             cBIVSpe.Name = "cBIVSpe";
-            cBIVSpe.Size = new Size(57, 23);
+            cBIVSpe.Size = new Size(65, 23);
             cBIVSpe.TabIndex = 16;
             // 
             // cBIVSpD
             // 
             cBIVSpD.DropDownStyle = ComboBoxStyle.DropDownList;
             cBIVSpD.FormattingEnabled = true;
-            cBIVSpD.Location = new Point(77, 448);
+            cBIVSpD.Location = new Point(81, 454);
             cBIVSpD.Name = "cBIVSpD";
-            cBIVSpD.Size = new Size(57, 23);
+            cBIVSpD.Size = new Size(65, 23);
             cBIVSpD.TabIndex = 15;
             cBIVSpD.SelectedIndexChanged += OnConfigurationChange;
             // 
@@ -598,16 +658,16 @@ namespace ZAShinyWarper
             // 
             cBIVSpA.DropDownStyle = ComboBoxStyle.DropDownList;
             cBIVSpA.FormattingEnabled = true;
-            cBIVSpA.Location = new Point(14, 448);
+            cBIVSpA.Location = new Point(10, 454);
             cBIVSpA.Name = "cBIVSpA";
-            cBIVSpA.Size = new Size(57, 23);
+            cBIVSpA.Size = new Size(65, 23);
             cBIVSpA.TabIndex = 14;
             cBIVSpA.SelectedIndexChanged += OnConfigurationChange;
             // 
             // lblIVDef
             // 
             lblIVDef.AutoSize = true;
-            lblIVDef.Location = new Point(140, 378);
+            lblIVDef.Location = new Point(152, 392);
             lblIVDef.Name = "lblIVDef";
             lblIVDef.Size = new Size(25, 15);
             lblIVDef.TabIndex = 13;
@@ -616,7 +676,7 @@ namespace ZAShinyWarper
             // lblIVAtk
             // 
             lblIVAtk.AutoSize = true;
-            lblIVAtk.Location = new Point(77, 378);
+            lblIVAtk.Location = new Point(81, 392);
             lblIVAtk.Name = "lblIVAtk";
             lblIVAtk.Size = new Size(25, 15);
             lblIVAtk.TabIndex = 12;
@@ -625,7 +685,7 @@ namespace ZAShinyWarper
             // lblIVHP
             // 
             lblIVHP.AutoSize = true;
-            lblIVHP.Location = new Point(14, 378);
+            lblIVHP.Location = new Point(10, 392);
             lblIVHP.Name = "lblIVHP";
             lblIVHP.Size = new Size(23, 15);
             lblIVHP.TabIndex = 11;
@@ -635,9 +695,9 @@ namespace ZAShinyWarper
             // 
             cBIVDef.DropDownStyle = ComboBoxStyle.DropDownList;
             cBIVDef.FormattingEnabled = true;
-            cBIVDef.Location = new Point(140, 396);
+            cBIVDef.Location = new Point(152, 410);
             cBIVDef.Name = "cBIVDef";
-            cBIVDef.Size = new Size(57, 23);
+            cBIVDef.Size = new Size(65, 23);
             cBIVDef.TabIndex = 10;
             cBIVDef.SelectedIndexChanged += OnConfigurationChange;
             // 
@@ -645,9 +705,9 @@ namespace ZAShinyWarper
             // 
             cBIVAtk.DropDownStyle = ComboBoxStyle.DropDownList;
             cBIVAtk.FormattingEnabled = true;
-            cBIVAtk.Location = new Point(77, 396);
+            cBIVAtk.Location = new Point(81, 410);
             cBIVAtk.Name = "cBIVAtk";
-            cBIVAtk.Size = new Size(57, 23);
+            cBIVAtk.Size = new Size(65, 23);
             cBIVAtk.TabIndex = 9;
             cBIVAtk.SelectedIndexChanged += OnConfigurationChange;
             // 
@@ -655,38 +715,29 @@ namespace ZAShinyWarper
             // 
             cBIVHP.DropDownStyle = ComboBoxStyle.DropDownList;
             cBIVHP.FormattingEnabled = true;
-            cBIVHP.Location = new Point(14, 396);
+            cBIVHP.Location = new Point(10, 410);
             cBIVHP.Name = "cBIVHP";
-            cBIVHP.Size = new Size(57, 23);
+            cBIVHP.Size = new Size(65, 23);
             cBIVHP.TabIndex = 8;
             cBIVHP.SelectedIndexChanged += OnConfigurationChange;
-            // 
-            // lblIV
-            // 
-            lblIV.AutoSize = true;
-            lblIV.Location = new Point(14, 361);
-            lblIV.Name = "lblIV";
-            lblIV.Size = new Size(25, 15);
-            lblIV.TabIndex = 7;
-            lblIV.Text = "IVs:";
             // 
             // cBSpecies
             // 
             cBSpecies.CheckOnClick = true;
             cBSpecies.FormattingEnabled = true;
             cBSpecies.IntegralHeight = false;
-            cBSpecies.Location = new Point(10, 213);
+            cBSpecies.Location = new Point(10, 295);
             cBSpecies.Name = "cBSpecies";
-            cBSpecies.Size = new Size(193, 142);
+            cBSpecies.Size = new Size(207, 94);
             cBSpecies.TabIndex = 6;
             cBSpecies.ItemCheck += OnConfigurationChange;
             cBSpecies.SelectedIndexChanged += OnSpeciesSelectedIndexChange;
             // 
             // btnResetSpecies
             // 
-            btnResetSpecies.Location = new Point(140, 193);
+            btnResetSpecies.Location = new Point(158, 272);
             btnResetSpecies.Name = "btnResetSpecies";
-            btnResetSpecies.Size = new Size(64, 23);
+            btnResetSpecies.Size = new Size(60, 25);
             btnResetSpecies.TabIndex = 29;
             btnResetSpecies.Text = "Reset";
             btnResetSpecies.UseVisualStyleBackColor = true;
@@ -695,7 +746,7 @@ namespace ZAShinyWarper
             // lblSpecies
             // 
             lblSpecies.AutoSize = true;
-            lblSpecies.Location = new Point(10, 196);
+            lblSpecies.Location = new Point(10, 277);
             lblSpecies.Name = "lblSpecies";
             lblSpecies.Size = new Size(46, 15);
             lblSpecies.TabIndex = 5;
@@ -704,7 +755,7 @@ namespace ZAShinyWarper
             // lblFilter
             // 
             lblFilter.AutoSize = true;
-            lblFilter.Location = new Point(10, 181);
+            lblFilter.Location = new Point(10, 262);
             lblFilter.Name = "lblFilter";
             lblFilter.Size = new Size(33, 15);
             lblFilter.TabIndex = 4;
@@ -714,17 +765,17 @@ namespace ZAShinyWarper
             // 
             cBWhenShinyFound.DropDownStyle = ComboBoxStyle.DropDownList;
             cBWhenShinyFound.FormattingEnabled = true;
-            cBWhenShinyFound.Location = new Point(8, 40);
+            cBWhenShinyFound.Location = new Point(13, 40);
             cBWhenShinyFound.Margin = new Padding(4, 3, 4, 3);
             cBWhenShinyFound.Name = "cBWhenShinyFound";
-            cBWhenShinyFound.Size = new Size(193, 23);
+            cBWhenShinyFound.Size = new Size(204, 23);
             cBWhenShinyFound.TabIndex = 3;
             cBWhenShinyFound.SelectedIndexChanged += OnConfigurationChange;
             // 
             // lblShinyFound
             // 
             lblShinyFound.AutoSize = true;
-            lblShinyFound.Location = new Point(8, 20);
+            lblShinyFound.Location = new Point(13, 20);
             lblShinyFound.Margin = new Padding(4, 0, 4, 0);
             lblShinyFound.Name = "lblShinyFound";
             lblShinyFound.Size = new Size(107, 15);
@@ -746,6 +797,7 @@ namespace ZAShinyWarper
             // gBStashedShiny
             // 
             gBStashedShiny.Controls.Add(StashedShiny1);
+            gBStashedShiny.Controls.Add(btnExportSets);
             gBStashedShiny.Controls.Add(StashedShiny2);
             gBStashedShiny.Controls.Add(StashedShiny3);
             gBStashedShiny.Controls.Add(StashedShiny4);
@@ -756,7 +808,7 @@ namespace ZAShinyWarper
             gBStashedShiny.Controls.Add(StashedShiny9);
             gBStashedShiny.Controls.Add(StashedShiny10);
             gBStashedShiny.Enabled = false;
-            gBStashedShiny.Location = new Point(546, 15);
+            gBStashedShiny.Location = new Point(565, 15);
             gBStashedShiny.Name = "gBStashedShiny";
             gBStashedShiny.Size = new Size(210, 567);
             gBStashedShiny.TabIndex = 7;
@@ -773,6 +825,17 @@ namespace ZAShinyWarper
             StashedShiny1.TabIndex = 0;
             StashedShiny1.TabStop = false;
             StashedShiny1.MouseEnter += OnMouseHover;
+            // 
+            // btnExportSets
+            // 
+            btnExportSets.Enabled = false;
+            btnExportSets.Location = new Point(6, 534);
+            btnExportSets.Name = "btnExportSets";
+            btnExportSets.Size = new Size(198, 27);
+            btnExportSets.TabIndex = 14;
+            btnExportSets.Text = "Export Sets";
+            btnExportSets.UseVisualStyleBackColor = true;
+            btnExportSets.Click += OnClickExportSets;
             // 
             // StashedShiny2
             // 
@@ -901,17 +964,6 @@ namespace ZAShinyWarper
             ShinyInfo.InitialDelay = 750;
             ShinyInfo.ReshowDelay = 1000;
             // 
-            // btnExportSets
-            // 
-            btnExportSets.Enabled = false;
-            btnExportSets.Location = new Point(552, 549);
-            btnExportSets.Name = "btnExportSets";
-            btnExportSets.Size = new Size(198, 27);
-            btnExportSets.TabIndex = 14;
-            btnExportSets.Text = "Export Sets";
-            btnExportSets.UseVisualStyleBackColor = true;
-            btnExportSets.Click += OnClickExportSets;
-            // 
             // btnWebhookSettings
             // 
             btnWebhookSettings.Enabled = false;
@@ -927,9 +979,8 @@ namespace ZAShinyWarper
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(768, 594);
+            ClientSize = new Size(788, 594);
             Controls.Add(btnWebhookSettings);
-            Controls.Add(btnExportSets);
             Controls.Add(btnScreenOff);
             Controls.Add(btnScreenOn);
             Controls.Add(gBStashedShiny);
@@ -947,7 +998,7 @@ namespace ZAShinyWarper
             MaximizeBox = false;
             Name = "ZAWarpWindow";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Z-A Shiny Warper by Berichan v3";
+            Text = "Z-A Shiny Warper by Berichan v4";
             Load += LoadDefaults;
             gBControls.ResumeLayout(false);
             gBControls.PerformLayout();
@@ -1013,7 +1064,6 @@ namespace ZAShinyWarper
         private System.Windows.Forms.ComboBox cBIVDef;
         private System.Windows.Forms.ComboBox cBIVAtk;
         private System.Windows.Forms.ComboBox cBIVHP;
-        private System.Windows.Forms.Label lblIV;
         private System.Windows.Forms.NumericUpDown nUDScaleMin;
         private System.Windows.Forms.NumericUpDown nUDScaleMax;
         private System.Windows.Forms.Label lblScaleMin;
@@ -1048,6 +1098,11 @@ namespace ZAShinyWarper
         private Button btnImportCoords;
         private Button btnIndexDown;
         private Button btnIndexUp;
+        private ComboBox cBForcedWeather;
+        private Label lblWeather;
+        private Label lblScale;
+        private ComboBox cBForcedTimeOfDay;
+        private Label lblTimeOfDay;
     }
 }
 

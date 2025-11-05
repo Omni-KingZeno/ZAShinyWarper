@@ -9,7 +9,7 @@ namespace ZAShinyWarper.Hunting
     {
         StopOnFound,
         StopAtFullCache,
-        CacheAndContinue,        
+        CacheAndContinue,
         ClearCacheAndContinue
     }
 
@@ -19,6 +19,27 @@ namespace ZAShinyWarper.Hunting
         Perfect, // 31
         Zero // 0
     }
+    public enum Weather
+    {
+        None = -1,
+        Clear = 0,
+        Overcast = 1,
+        Rain = 2,
+        StringWinds = 3,
+        Windy = 5,        
+        MildWinds = 7,
+        Fog = 8,
+        IntenseSun = 9,
+    }
+
+    public enum TimeOfDay
+    {
+        None = -1, // Don't change
+        Morning = 14400,   // Beginning of Morning
+        Midday = 43200, // Mid-day
+        Night = 72000,  // Beggining of night
+        LateNight = 86400 // Mid-Night
+    }
 
     public class ShinyHunter<T> where T : PKM, new()
     {
@@ -26,11 +47,22 @@ namespace ZAShinyWarper.Hunting
         private const int PA9_SIZE = 0x148;
         private const int STRUCT_SIZE = 0x28;
         private const string STASH_FOLDER = "StashedShinies";
+        private Weather? _lockedWeather = null;
+        private CancellationTokenSource? _weatherLockCts = null;
+        private TimeOfDay? _lockedTime = null;
+        private CancellationTokenSource? _timeLockCts = null;
 
-        // Pointer to the array start: [[main+4200D20]+350]
+        //
+        // Pointers courtesy of Kunogi who's awesome for finding them!
+        //
+        // Array start: [[main+4200D20]+350]
         private readonly long[] arrayStartPointer = [0x4200D20, 0x350];
-        // Pointer to invalid start: [[main+4200D20]+358]
+        // Invalid start: [[main+4200D20]+358]
         private readonly long[] invalidStartPointer = [0x4200D20, 0x358];
+        // Weather pointer: [[main+41FFC20]+1B0]+0
+        public readonly long[] weatherPointer = [0x41FFC20, 0x1B0];
+        // Time pointer: [[main+41FFC40]+D8]+30
+        private readonly long[] timePointer = [0x41FFC40, 0xD8];
 
         public IList<StashedShiny<T>> PreviousStashedShinies { get; private set; } = [];
         public IList<StashedShiny<T>> StashedShinies { get; private set; } = [];
@@ -73,6 +105,38 @@ namespace ZAShinyWarper.Hunting
         private static T CreatePKM(byte[] data)
         {
             return (T)Activator.CreateInstance(typeof(T), new Memory<byte>(data))!;
+        }
+
+        public void SetWeather(IRAMReadWriter bot, Weather weather)
+        {
+            var weatherAddress = bot.FollowMainPointer(weatherPointer); // Get address
+            if (weather == Weather.None)
+                UnlockWeather();
+            else
+            {
+                var weatherBytes = BitConverter.GetBytes((uint)weather); // Convert to bytes
+                bot.WriteBytes(weatherBytes, weatherAddress, RWMethod.Absolute); // Write
+                LockWeather(bot, weather); // lock
+            }
+        }
+
+        public void SetTime(IRAMReadWriter bot, TimeOfDay time)
+        {
+            var timeAddress = bot.FollowMainPointer(timePointer);
+            timeAddress += 0x30;
+
+            if (time == TimeOfDay.None)
+            {
+                UnlockTime();
+                return;
+            }
+            else
+            {
+                // Cast enum to float
+                var timeBytes = BitConverter.GetBytes((float)time); // Convert to bytes
+                bot.WriteBytes(timeBytes, timeAddress, RWMethod.Absolute); // Write
+                LockTime(bot, time);
+            }
         }
 
         /// <summary>
@@ -211,6 +275,115 @@ namespace ZAShinyWarper.Hunting
                 info.AppendLine(pk.ToString());
             }
             return info.ToString();
+        }
+
+        public void LockWeather(IRAMReadWriter bot, Weather weather)
+        {
+            _lockedWeather = weather;
+            _weatherLockCts = new CancellationTokenSource();
+
+            // Start background task to monitor and maintain weather
+            Task.Run(() => MonitorWeather(bot, _weatherLockCts.Token));
+        }
+
+        public void UnlockWeather()
+        {
+            _lockedWeather = null;
+            _weatherLockCts?.Cancel();
+            _weatherLockCts?.Dispose();
+            _weatherLockCts = null;
+        }
+
+        private async Task MonitorWeather(IRAMReadWriter bot, CancellationToken token)
+        {
+            long[] weatherPointer = [0x41FFC20, 0x1B0];
+
+            while (!token.IsCancellationRequested && _lockedWeather.HasValue)
+            {
+                try
+                {
+                    var weatherAddress = bot.FollowMainPointer(weatherPointer);
+
+                    // Read current weather
+                    var currentWeatherBytes = bot.ReadBytes(weatherAddress, 4, RWMethod.Absolute);
+                    var currentWeather = (Weather)BitConverter.ToUInt32(currentWeatherBytes, 0);
+
+                    // If it changed, write it back
+                    if (currentWeather != _lockedWeather.Value)
+                    {
+                        var weatherBytes = BitConverter.GetBytes((uint)_lockedWeather.Value);
+                        bot.WriteBytes(weatherBytes, weatherAddress, RWMethod.Absolute);
+                        Debug.WriteLine($"Weather changed from {currentWeather} to {_lockedWeather.Value}, correcting...");
+                    }
+
+                    // Check every minute
+                    await Task.Delay(60000, token);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error monitoring weather: {ex.Message}");
+                    await Task.Delay(1000, token);
+                }
+            }
+        }
+
+        public void LockTime(IRAMReadWriter bot, TimeOfDay time)
+        {
+            _lockedTime = time;
+            _timeLockCts = new CancellationTokenSource();
+
+            // Start background task to monitor and maintain weather
+            Task.Run(() => MonitorTime(bot, _timeLockCts.Token));
+        }
+
+        public void UnlockTime()
+        {
+            _lockedTime = null;
+            _timeLockCts?.Cancel();
+            _timeLockCts?.Dispose();
+            _timeLockCts = null;
+        }
+
+        private async Task MonitorTime(IRAMReadWriter bot, CancellationToken token)
+        {
+            while (!token.IsCancellationRequested && _lockedTime.HasValue)
+            {
+                try
+                {
+                    var timeAddress = bot.FollowMainPointer(timePointer);
+                    timeAddress += 0x30;
+
+                    // Read current time (f32 = 4 bytes)
+                    var currentTimeBytes = bot.ReadBytes(timeAddress, 4, RWMethod.Absolute);
+                    var currentTime = BitConverter.ToSingle(currentTimeBytes, 0);
+
+                    var targetTime = (float)_lockedTime.Value;
+
+                    // It will always change, write it back
+                    if (currentTime != targetTime)
+                    {
+                        var timeBytes = BitConverter.GetBytes(targetTime);
+                        bot.WriteBytes(timeBytes, timeAddress, RWMethod.Absolute);
+                        Debug.WriteLine($"Time drifted from {targetTime} to {currentTime}, correcting...");
+                    }
+
+                    // Check every 5 minutes to match the cycles
+                    await Task.Delay(300000, token);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error monitoring time: {ex.Message}");
+                    await Task.Delay(1000, token);
+                }
+            }
         }
     }
 }
