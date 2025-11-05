@@ -956,7 +956,7 @@ namespace ZAShinyWarper
                     {
                         CrossThreadExtensions.DoThreaded(() =>
                         {
-                            MessageBox.Show($"The following Shiny {(pk.PKM.IsAlpha ? "Alpha " : "")} has been found, but does not match your filter.\r\nYou may wish to remove it such that it doesn't occupy one of your shiny stash slots.\r\n\r\n{pk}\r\n",
+                            MessageBox.Show($"The following Shiny {(pk.PKM.IsAlpha ? "Alpha " : "")}has been found, but does not match your filter.\r\nYou may wish to remove it such that it doesn't occupy one of your shiny stash slots.\r\n\r\n{pk}\r\n",
                                 "Found something we don't want!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         });
                     }
