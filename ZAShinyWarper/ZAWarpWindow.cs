@@ -54,12 +54,12 @@ namespace ZAShinyWarper
             // Forced Weather
             foreach (var item in Enum.GetValues<Weather>())
                 cBForcedWeather.Items.Add(item);
-            cBForcedWeather.SelectedIndex = -1;
+            cBForcedWeather.SelectedIndex = 8;
 
             // Forced Time of Day
             foreach (var item in Enum.GetValues<TimeOfDay>())
                 cBForcedTimeOfDay.Items.Add(item);
-            cBForcedTimeOfDay.SelectedIndex = -1;
+            cBForcedTimeOfDay.SelectedIndex = 4;
 
             // Species
             cBSpecies.Items.Add("Any");
