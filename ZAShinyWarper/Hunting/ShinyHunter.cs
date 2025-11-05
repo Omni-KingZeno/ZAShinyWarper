@@ -109,33 +109,47 @@ namespace ZAShinyWarper.Hunting
 
         public void SetWeather(IRAMReadWriter bot, Weather weather)
         {
-            var weatherAddress = bot.FollowMainPointer(weatherPointer); // Get address
-            if (weather == Weather.None)
-                UnlockWeather();
-            else
+            try
             {
-                var weatherBytes = BitConverter.GetBytes((uint)weather); // Convert to bytes
-                bot.WriteBytes(weatherBytes, weatherAddress, RWMethod.Absolute); // Write
-                LockWeather(bot, weather); // lock
+                var weatherAddress = bot.FollowMainPointer(weatherPointer); // Get address
+                if (weather == Weather.None)
+                    UnlockWeather();
+                else
+                {
+                    var weatherBytes = BitConverter.GetBytes((uint)weather); // Convert to bytes
+                    bot.WriteBytes(weatherBytes, weatherAddress, RWMethod.Absolute); // Write
+                    LockWeather(bot, weather); // lock
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Failed to set weather. Please check your connection to the Switch.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         public void SetTime(IRAMReadWriter bot, TimeOfDay time)
         {
-            var timeAddress = bot.FollowMainPointer(timePointer);
-            timeAddress += 0x30;
+            try
+            {
+                var timeAddress = bot.FollowMainPointer(timePointer);
+                timeAddress += 0x30;
 
-            if (time == TimeOfDay.None)
-            {
-                UnlockTime();
-                return;
+                if (time == TimeOfDay.None)
+                {
+                    UnlockTime();
+                    return;
+                }
+                else
+                {
+                    // Cast enum to float
+                    var timeBytes = BitConverter.GetBytes((float)time); // Convert to bytes
+                    bot.WriteBytes(timeBytes, timeAddress, RWMethod.Absolute); // Write
+                    LockTime(bot, time);
+                }
             }
-            else
+            catch
             {
-                // Cast enum to float
-                var timeBytes = BitConverter.GetBytes((float)time); // Convert to bytes
-                bot.WriteBytes(timeBytes, timeAddress, RWMethod.Absolute); // Write
-                LockTime(bot, time);
+                MessageBox.Show("Failed to set time. Please check your connection to the Switch.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -214,36 +228,43 @@ namespace ZAShinyWarper.Hunting
         /// <param name="index">Index of the shiny to despawn (0-based)</param>
         public void RemoveShinyFromCache(IRAMReadWriter bot, int index)
         {
-            int stashCount = GetStashedShinyCount(bot, out ulong structArrayStart);
-
-            if (index < 0 || index >= stashCount)
-                throw new ArgumentOutOfRangeException(nameof(index), "Index out of range for current stash count.");
-
-            // Read the structure to despawn
-            var structOffset = structArrayStart + (ulong)(index * STRUCT_SIZE);
-            var structData = bot.ReadBytes(structOffset, STRUCT_SIZE, RWMethod.Absolute);
-
-            // Set the address to 0 (offset 8 in the structure)
-            Array.Clear(structData, 8, 8);
-
-            // Shift all structures after this one down by one position
-            for (int i = index; i < stashCount - 1; i++)
+            try
             {
-                var nextData = bot.ReadBytes(structArrayStart + (ulong)((i + 1) * STRUCT_SIZE), STRUCT_SIZE, RWMethod.Absolute);
-                bot.WriteBytes(nextData, structArrayStart + (ulong)(i * STRUCT_SIZE), RWMethod.Absolute);
+                int stashCount = GetStashedShinyCount(bot, out ulong structArrayStart);
+
+                if (index < 0 || index >= stashCount)
+                    throw new ArgumentOutOfRangeException(nameof(index), "Index out of range for current stash count.");
+
+                // Read the structure to despawn
+                var structOffset = structArrayStart + (ulong)(index * STRUCT_SIZE);
+                var structData = bot.ReadBytes(structOffset, STRUCT_SIZE, RWMethod.Absolute);
+
+                // Set the address to 0 (offset 8 in the structure)
+                Array.Clear(structData, 8, 8);
+
+                // Shift all structures after this one down by one position
+                for (int i = index; i < stashCount - 1; i++)
+                {
+                    var nextData = bot.ReadBytes(structArrayStart + (ulong)((i + 1) * STRUCT_SIZE), STRUCT_SIZE, RWMethod.Absolute);
+                    bot.WriteBytes(nextData, structArrayStart + (ulong)(i * STRUCT_SIZE), RWMethod.Absolute);
+                }
+
+                // Write the despawned structure at the end
+                var lastStructOffset = structArrayStart + (ulong)((stashCount - 1) * STRUCT_SIZE);
+                bot.WriteBytes(structData, lastStructOffset, RWMethod.Absolute);
+
+                // Update the invalid start address (decrease by one structure size)
+                var invalidStartAddress = bot.FollowMainPointer(invalidStartPointer);
+                var newInvalidStartAddress = invalidStartAddress - STRUCT_SIZE;
+
+                // Write the new invalid start address back to [[main+4200D20]+358]
+                var metadataBase = bot.FollowMainPointer([0x4200D20]);
+                bot.WriteBytes(BitConverter.GetBytes(newInvalidStartAddress), metadataBase + 0x358, RWMethod.Absolute);
             }
-
-            // Write the despawned structure at the end
-            var lastStructOffset = structArrayStart + (ulong)((stashCount - 1) * STRUCT_SIZE);
-            bot.WriteBytes(structData, lastStructOffset, RWMethod.Absolute);
-
-            // Update the invalid start address (decrease by one structure size)
-            var invalidStartAddress = bot.FollowMainPointer(invalidStartPointer);
-            var newInvalidStartAddress = invalidStartAddress - STRUCT_SIZE;
-
-            // Write the new invalid start address back to [[main+4200D20]+358]
-            var metadataBase = bot.FollowMainPointer([0x4200D20]);
-            bot.WriteBytes(BitConverter.GetBytes(newInvalidStartAddress), metadataBase + 0x358, RWMethod.Absolute);
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to remove the shiny from stash. Please check your connection to the Switch.\n\nError: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -252,16 +273,23 @@ namespace ZAShinyWarper.Hunting
         /// </summary>
         public void ClearAllFromStash(IRAMReadWriter bot)
         {
-            // Get the array start address
-            var structArrayStart = bot.FollowMainPointer(arrayStartPointer);
+            try
+            {
+                // Get the array start address
+                var structArrayStart = bot.FollowMainPointer(arrayStartPointer);
 
-            // Set the invalid start address equal to the array start (making count = 0)
-            var metadataBase = bot.FollowMainPointer([0x4200D20]);
-            bot.WriteBytes(BitConverter.GetBytes(structArrayStart), metadataBase + 0x358, RWMethod.Absolute);
+                // Set the invalid start address equal to the array start (making count = 0)
+                var metadataBase = bot.FollowMainPointer([0x4200D20]);
+                bot.WriteBytes(BitConverter.GetBytes(structArrayStart), metadataBase + 0x358, RWMethod.Absolute);
 
-            // Clear local cache
-            StashedShinies = [];
-            DifferentShinies = [];
+                // Clear local cache
+                StashedShinies = [];
+                DifferentShinies = [];
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to clear stash. Please check your connection to the Switch.\n\nError: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public string GetShinyStashInfo(IList<StashedShiny<T>> stash)
