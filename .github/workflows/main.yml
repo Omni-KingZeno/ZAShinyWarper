@@ -15,6 +15,9 @@ jobs:
       BUILD_PLATFORM: Any CPU
       BUILD_CONFIGURATION: Release
     
+    permissions:
+      contents: write
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -73,6 +76,37 @@ jobs:
         New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\bin"
         Copy-Item "${{ github.workspace }}\ZAShinyWarper\bin\Release\net9.0-windows\publish\ZAShinyWarper.exe" `
           -Destination "${{ github.workspace }}\bin\" -Force
+    
+    - name: Create ZIP archive
+      shell: pwsh
+      run: |
+        Compress-Archive -Path "${{ github.workspace }}\bin\ZAShinyWarper.exe" `
+          -DestinationPath "${{ github.workspace }}\ZAShinyWarper-win-x64.zip"
+    
+    - name: Generate version tag
+      id: version
+      shell: pwsh
+      run: |
+        $patchVersion = ${{ github.run_number }} - 30
+        $version = "v1.0.$patchVersion"
+        echo "tag=$version" >> $env:GITHUB_OUTPUT
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.version.outputs.tag }}
+        name: Release ${{ steps.version.outputs.tag }}
+        body: |
+          Automated release from commit ${{ github.sha }}
+          
+          ## Changes
+          - Built from latest main branch
+        files: |
+          ZAShinyWarper-win-x64.zip
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
