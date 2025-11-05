@@ -760,6 +760,8 @@ namespace ZAShinyWarper
             foreach (var cb in CBIVs)
                 cb.PerformSafely(() => cb.Enabled = enabled);
             cBWhenShinyFound.PerformSafely(() => cBWhenShinyFound.Enabled = enabled);
+            cBForcedWeather.PerformSafely(() => cBForcedWeather.Enabled = enabled);
+            cBForcedTimeOfDay.PerformSafely(() => cBForcedTimeOfDay.Enabled = enabled);
             nUDCheckTime.PerformSafely(() => nUDCheckTime.Enabled = enabled);
             nUDCamMove.PerformSafely(() => nUDCamMove.Enabled = enabled);
             nUDSaveFreq.PerformSafely(() => nUDSaveFreq.Enabled = enabled);
