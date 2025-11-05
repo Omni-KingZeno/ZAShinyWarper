@@ -358,13 +358,12 @@ namespace ZAShinyWarper
             // 
             // lblThanks
             // 
-            lblThanks.AutoSize = true;
-            lblThanks.Location = new Point(55, 555);
+            lblThanks.Location = new Point(3, 549);
             lblThanks.Margin = new Padding(4, 0, 4, 0);
             lblThanks.Name = "lblThanks";
-            lblThanks.Size = new Size(216, 30);
+            lblThanks.Size = new Size(316, 37);
             lblThanks.TabIndex = 4;
-            lblThanks.Text = "Many thanks to Kurt for PKHeX and\r\nAnubis for the Z-A shiny stash research.";
+            lblThanks.Text = "Many thanks to Kurt for PKHeX, Anubis for the shiny stash research, and Berichan for creating the original program";
             lblThanks.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // btnConnectUSB
@@ -435,7 +434,7 @@ namespace ZAShinyWarper
             cBForcedTimeOfDay.Name = "cBForcedTimeOfDay";
             cBForcedTimeOfDay.Size = new Size(204, 23);
             cBForcedTimeOfDay.TabIndex = 37;
-            cBForcedTimeOfDay.SelectedIndexChanged += OnConfigurationChange; ;
+            cBForcedTimeOfDay.SelectedIndexChanged += OnConfigurationChange;
             // 
             // lblTimeOfDay
             // 
@@ -998,7 +997,7 @@ namespace ZAShinyWarper
             MaximizeBox = false;
             Name = "ZAWarpWindow";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Z-A Shiny Warper by Berichan v4";
+            Text = "Z-A Shiny Warper";
             Load += LoadDefaults;
             gBControls.ResumeLayout(false);
             gBControls.PerformLayout();
