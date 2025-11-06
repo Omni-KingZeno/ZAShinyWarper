@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using PKHeX.Core;
@@ -28,8 +29,11 @@ namespace ZAShinyWarper
 
         public ComboBox[] CBIVs = default!;
 
+        private CancellationTokenSource? _monitoringCts = null;
+
         // Bot
         private bool matchingShinyFound = false;
+        private bool monitoring = false;
         private bool warping = false;
         private int currentWarps = 0;
 
@@ -814,6 +818,7 @@ namespace ZAShinyWarper
             btnWarp.Enabled = enabled;
             btnResetFilters.Enabled = enabled;
             btnExportSets.Enabled = enabled;
+            btnMonitoring.Enabled = enabled;
 
             if (wifi)
             {
@@ -856,6 +861,7 @@ namespace ZAShinyWarper
                 nUDScaleMax.PerformSafely(() => nUDScaleMax.Enabled = enabled);
             }
             btnResetFilters.PerformSafely(() => btnResetFilters.Enabled = enabled);
+            btnMonitoring.PerformSafely(() => btnMonitoring.Enabled = enabled);
         }
 
         private void SetWarpingEnableState(bool enabled)
@@ -1534,6 +1540,63 @@ namespace ZAShinyWarper
                 if (index >= 0 && index < lBCoords.Items.Count)
                 {
                     lBCoords.SelectedIndex = index;
+                }
+            }
+        }
+
+        private void OnClickMonitoring(object sender, EventArgs e)
+        {
+            if (monitoring)
+            {
+                monitoring = false;
+                btnMonitoring.PerformSafely(() => btnMonitoring.Text = "Start Monitoring");
+                btnWarp.PerformSafely(() => btnWarp.Enabled = true);
+                _monitoringCts?.Cancel();
+            }
+            else
+            {
+                monitoring = true;
+                btnWarp.PerformSafely(() => btnWarp.Enabled = false);
+                btnMonitoring.PerformSafely(() => btnMonitoring.Text = "Monitoring. Click to end");
+                _monitoringCts = new CancellationTokenSource();
+                _ = MonitorStash(_monitoringCts.Token);
+            }
+        }
+
+        private async Task MonitorStash(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    // Refresh stashed shinies
+                    var newFound = shinyHunter.LoadStashedShinies(bot);
+                    if (newFound)
+                    {
+                        DisplayStashedShinies();
+                        var newShinies = shinyHunter.DifferentShinies;
+                        foreach (var pk in newShinies)
+                        {
+                            await SendWebhook(pk.ToShowdownString(), pk.PKM);
+                            CrossThreadExtensions.DoThreaded(() =>
+                            {
+                                MessageBox.Show($"The following Shiny {(pk.PKM.IsAlpha ? "Alpha " : "")}has been found.\r\n\r\n{pk}\r\n",
+                                    "Found something new!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            });
+                        }                        
+                    }                        
+
+                    // Check every minute for new stashed shinies
+                    await Task.Delay(60000, token);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error monitoring stash: {ex.Message}");
+                    await Task.Delay(1000, token);
                 }
             }
         }

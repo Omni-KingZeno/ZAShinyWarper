@@ -109,6 +109,7 @@ namespace ZAShinyWarper
             btnScreenOff = new Button();
             ShinyInfo = new ToolTip(components);
             btnWebhookSettings = new Button();
+            btnMonitoring = new Button();
             gBControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nUDDistance).BeginInit();
             gBShinyHunt.SuspendLayout();
@@ -134,7 +135,7 @@ namespace ZAShinyWarper
             // lbl_IP
             // 
             lbl_IP.AutoSize = true;
-            lbl_IP.Location = new Point(14, 15);
+            lbl_IP.Location = new Point(12, 31);
             lbl_IP.Margin = new Padding(4, 0, 4, 0);
             lbl_IP.Name = "lbl_IP";
             lbl_IP.Size = new Size(20, 15);
@@ -143,20 +144,21 @@ namespace ZAShinyWarper
             // 
             // tB_IP
             // 
-            tB_IP.Location = new Point(38, 12);
+            tB_IP.Location = new Point(32, 27);
             tB_IP.Margin = new Padding(4, 3, 4, 3);
+            tB_IP.MaxLength = 15;
             tB_IP.Name = "tB_IP";
-            tB_IP.Size = new Size(280, 23);
+            tB_IP.Size = new Size(131, 23);
             tB_IP.TabIndex = 1;
             tB_IP.Text = "192.168.0.1";
             tB_IP.TextChanged += OnConfigurationChange;
             // 
             // btnConnect
             // 
-            btnConnect.Location = new Point(14, 42);
+            btnConnect.Location = new Point(15, 60);
             btnConnect.Margin = new Padding(4, 3, 4, 3);
             btnConnect.Name = "btnConnect";
-            btnConnect.Size = new Size(148, 36);
+            btnConnect.Size = new Size(148, 30);
             btnConnect.TabIndex = 2;
             btnConnect.Text = "Connect";
             btnConnect.UseVisualStyleBackColor = true;
@@ -369,10 +371,10 @@ namespace ZAShinyWarper
             // 
             // btnConnectUSB
             // 
-            btnConnectUSB.Location = new Point(170, 42);
+            btnConnectUSB.Location = new Point(170, 60);
             btnConnectUSB.Margin = new Padding(4, 3, 4, 3);
             btnConnectUSB.Name = "btnConnectUSB";
-            btnConnectUSB.Size = new Size(148, 36);
+            btnConnectUSB.Size = new Size(148, 30);
             btnConnectUSB.TabIndex = 5;
             btnConnectUSB.Text = "ConnectUSB";
             btnConnectUSB.UseVisualStyleBackColor = true;
@@ -800,10 +802,10 @@ namespace ZAShinyWarper
             // btnWarp
             // 
             btnWarp.Enabled = false;
-            btnWarp.Location = new Point(170, 126);
+            btnWarp.Location = new Point(170, 132);
             btnWarp.Margin = new Padding(4, 3, 4, 3);
             btnWarp.Name = "btnWarp";
-            btnWarp.Size = new Size(147, 36);
+            btnWarp.Size = new Size(148, 30);
             btnWarp.TabIndex = 1;
             btnWarp.Text = "Begin Warping";
             btnWarp.UseVisualStyleBackColor = true;
@@ -954,9 +956,9 @@ namespace ZAShinyWarper
             // btnScreenOn
             // 
             btnScreenOn.Enabled = false;
-            btnScreenOn.Location = new Point(15, 84);
+            btnScreenOn.Location = new Point(15, 96);
             btnScreenOn.Name = "btnScreenOn";
-            btnScreenOn.Size = new Size(148, 36);
+            btnScreenOn.Size = new Size(148, 30);
             btnScreenOn.TabIndex = 8;
             btnScreenOn.Text = "Screen On";
             btnScreenOn.UseVisualStyleBackColor = true;
@@ -965,9 +967,9 @@ namespace ZAShinyWarper
             // btnScreenOff
             // 
             btnScreenOff.Enabled = false;
-            btnScreenOff.Location = new Point(169, 84);
+            btnScreenOff.Location = new Point(169, 96);
             btnScreenOff.Name = "btnScreenOff";
-            btnScreenOff.Size = new Size(148, 36);
+            btnScreenOff.Size = new Size(148, 30);
             btnScreenOff.TabIndex = 9;
             btnScreenOff.Text = "Screen Off";
             btnScreenOff.UseVisualStyleBackColor = true;
@@ -982,19 +984,32 @@ namespace ZAShinyWarper
             // btnWebhookSettings
             // 
             btnWebhookSettings.Enabled = false;
-            btnWebhookSettings.Location = new Point(15, 126);
+            btnWebhookSettings.Location = new Point(170, 24);
             btnWebhookSettings.Name = "btnWebhookSettings";
-            btnWebhookSettings.Size = new Size(148, 36);
+            btnWebhookSettings.Size = new Size(148, 30);
             btnWebhookSettings.TabIndex = 15;
             btnWebhookSettings.Text = "Webhook Settings";
             btnWebhookSettings.UseVisualStyleBackColor = true;
             btnWebhookSettings.Click += OnClickWebhookSettings;
+            // 
+            // btnMonitoring
+            // 
+            btnMonitoring.Enabled = false;
+            btnMonitoring.Location = new Point(15, 132);
+            btnMonitoring.Margin = new Padding(4, 3, 4, 3);
+            btnMonitoring.Name = "btnMonitoring";
+            btnMonitoring.Size = new Size(148, 30);
+            btnMonitoring.TabIndex = 16;
+            btnMonitoring.Text = "Begin Monitoring";
+            btnMonitoring.UseVisualStyleBackColor = true;
+            btnMonitoring.Click += OnClickMonitoring;
             // 
             // ZAWarpWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(802, 591);
+            Controls.Add(btnMonitoring);
             Controls.Add(btnWebhookSettings);
             Controls.Add(btnScreenOff);
             Controls.Add(btnScreenOn);
@@ -1119,6 +1134,7 @@ namespace ZAShinyWarper
         private Label lblTimeOfDay;
         private Button btnRefreshWeather;
         private Button btnRefreshTime;
+        private Button btnMonitoring;
     }
 }
 
