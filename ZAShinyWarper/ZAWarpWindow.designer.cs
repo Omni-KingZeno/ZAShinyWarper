@@ -56,8 +56,10 @@ namespace ZAShinyWarper
             btnConnectUSB = new Button();
             gBShinyHunt = new GroupBox();
             cBForcedTimeOfDay = new ComboBox();
-            lblTimeOfDay = new Label();
+            btnRefreshTime = new Button();
             cBForcedWeather = new ComboBox();
+            btnRefreshWeather = new Button();
+            lblTimeOfDay = new Label();
             lblWeather = new Label();
             lblScale = new Label();
             cBIsAlpha = new CheckBox();
@@ -379,8 +381,10 @@ namespace ZAShinyWarper
             // gBShinyHunt
             // 
             gBShinyHunt.Controls.Add(cBForcedTimeOfDay);
-            gBShinyHunt.Controls.Add(lblTimeOfDay);
+            gBShinyHunt.Controls.Add(btnRefreshTime);
             gBShinyHunt.Controls.Add(cBForcedWeather);
+            gBShinyHunt.Controls.Add(btnRefreshWeather);
+            gBShinyHunt.Controls.Add(lblTimeOfDay);
             gBShinyHunt.Controls.Add(lblWeather);
             gBShinyHunt.Controls.Add(lblScale);
             gBShinyHunt.Controls.Add(cBIsAlpha);
@@ -430,9 +434,43 @@ namespace ZAShinyWarper
             cBForcedTimeOfDay.Location = new Point(13, 131);
             cBForcedTimeOfDay.Margin = new Padding(4, 3, 4, 3);
             cBForcedTimeOfDay.Name = "cBForcedTimeOfDay";
-            cBForcedTimeOfDay.Size = new Size(204, 23);
+            cBForcedTimeOfDay.Size = new Size(182, 23);
             cBForcedTimeOfDay.TabIndex = 37;
             cBForcedTimeOfDay.SelectedIndexChanged += OnConfigurationChange;
+            // 
+            // btnRefreshTime
+            // 
+            btnRefreshTime.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnRefreshTime.Location = new Point(193, 130);
+            btnRefreshTime.Margin = new Padding(0);
+            btnRefreshTime.Name = "btnRefreshTime";
+            btnRefreshTime.Size = new Size(25, 25);
+            btnRefreshTime.TabIndex = 39;
+            btnRefreshTime.Text = "⟲";
+            btnRefreshTime.UseVisualStyleBackColor = true;
+            btnRefreshTime.Click += OnClickRefresh;
+            // 
+            // cBForcedWeather
+            // 
+            cBForcedWeather.DropDownStyle = ComboBoxStyle.DropDownList;
+            cBForcedWeather.FormattingEnabled = true;
+            cBForcedWeather.Location = new Point(13, 86);
+            cBForcedWeather.Margin = new Padding(4, 3, 4, 3);
+            cBForcedWeather.Name = "cBForcedWeather";
+            cBForcedWeather.Size = new Size(182, 23);
+            cBForcedWeather.TabIndex = 35;
+            cBForcedWeather.SelectedIndexChanged += OnConfigurationChange;
+            // 
+            // btnRefreshWeather
+            // 
+            btnRefreshWeather.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnRefreshWeather.Location = new Point(193, 85);
+            btnRefreshWeather.Name = "btnRefreshWeather";
+            btnRefreshWeather.Size = new Size(25, 25);
+            btnRefreshWeather.TabIndex = 38;
+            btnRefreshWeather.Text = "⟲";
+            btnRefreshWeather.UseVisualStyleBackColor = true;
+            btnRefreshWeather.Click += OnClickRefresh;
             // 
             // lblTimeOfDay
             // 
@@ -443,17 +481,6 @@ namespace ZAShinyWarper
             lblTimeOfDay.Size = new Size(108, 15);
             lblTimeOfDay.TabIndex = 36;
             lblTimeOfDay.Text = "Forced Time of day";
-            // 
-            // cBForcedWeather
-            // 
-            cBForcedWeather.DropDownStyle = ComboBoxStyle.DropDownList;
-            cBForcedWeather.FormattingEnabled = true;
-            cBForcedWeather.Location = new Point(13, 86);
-            cBForcedWeather.Margin = new Padding(4, 3, 4, 3);
-            cBForcedWeather.Name = "cBForcedWeather";
-            cBForcedWeather.Size = new Size(204, 23);
-            cBForcedWeather.TabIndex = 35;
-            cBForcedWeather.SelectedIndexChanged += OnConfigurationChange;
             // 
             // lblWeather
             // 
@@ -1090,6 +1117,8 @@ namespace ZAShinyWarper
         private Label lblScale;
         private ComboBox cBForcedTimeOfDay;
         private Label lblTimeOfDay;
+        private Button btnRefreshWeather;
+        private Button btnRefreshTime;
     }
 }
 

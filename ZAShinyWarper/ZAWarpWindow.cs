@@ -11,7 +11,7 @@ namespace ZAShinyWarper
 {
     public partial class ZAWarpWindow : Form
     {
-        private readonly long[] jumpsPos = [0x41EC340, 0x248, 0x00, 0x138]; // [[[[main+41EC340]+248]+00]+138]+90
+        private readonly long[] jumpsPos = [0x41ED340, 0x248, 0x00, 0x138]; // [[[[main+41ED340]+248]+00]+138]+90
         private static IRAMReadWriter bot = default!;
 
         private List<Vector3> positions = [];
@@ -556,6 +556,46 @@ namespace ZAShinyWarper
             return bot.FollowMainPointer(jumpsPos) + 0x90;
         }
 
+        private void OnClickRefresh(object sender, EventArgs e)
+        {
+            if (sender == btnRefreshTime)
+            {
+                if (bot != null && bot.Connected)
+                {
+                    try
+                    {
+                        shinyHunter.SetTime(bot, (TimeOfDay)cBForcedTimeOfDay.SelectedItem!, false);
+                    }
+                    catch 
+                    {
+                        MessageBox.Show("Error Setting the time. PLease check your connection to the Switch");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Not connected to SysBot.");
+                }
+            }
+            else if (sender == btnRefreshWeather)
+            {
+                if (bot != null && bot.Connected)
+                {
+                    try
+                    {
+                        shinyHunter.SetWeather(bot, (Weather)cBForcedWeather.SelectedItem!, false);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Error Setting the weather. PLease check your connection to the Switch");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Not connected to SysBot.");
+                }
+            }
+        }
+
         private void OnClickReset(object sender, EventArgs e)
         {
             // Uncheck all items
@@ -762,6 +802,8 @@ namespace ZAShinyWarper
             cBWhenShinyFound.PerformSafely(() => cBWhenShinyFound.Enabled = enabled);
             cBForcedWeather.PerformSafely(() => cBForcedWeather.Enabled = enabled);
             cBForcedTimeOfDay.PerformSafely(() => cBForcedTimeOfDay.Enabled = enabled);
+            btnRefreshWeather.PerformSafely(() => btnRefreshWeather.Enabled = enabled);
+            btnRefreshTime.PerformSafely(() => btnRefreshTime.Enabled = enabled);
             nUDCheckTime.PerformSafely(() => nUDCheckTime.Enabled = enabled);
             nUDCamMove.PerformSafely(() => nUDCamMove.Enabled = enabled);
             nUDSaveFreq.PerformSafely(() => nUDSaveFreq.Enabled = enabled);
@@ -890,7 +932,7 @@ namespace ZAShinyWarper
                             shouldStop = true;
                             stopMessage = $"A Shiny {(pk.PKM.IsAlpha ? "Alpha " : "")}matching the filter has been found after {currentWarps} attempts!\r\nStopping warping.\r\n\r\n{pk}\r\n";
                         }
-                        else if (matchesFilter && action == ShinyFoundAction.ClearCacheAndContinue) // Found what we wanted, keep going
+                        else if (matchesFilter && action == ShinyFoundAction.ClearAndContinue) // Found what we wanted, keep going
                         {
                             MessageBox.Show($"We Found A Match after {currentWarps} attempts! Let's keep going to find more!\r\n\r\n{pk}\r\n", "Found!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
@@ -899,7 +941,7 @@ namespace ZAShinyWarper
                             shouldStop = true;
                             stopMessage = $"A Shiny {(pk.PKM.IsAlpha ? "Alpha " : "")}matching the filter has been found after {currentWarps} attempts and your stash is now full!\r\nStopping warping.\r\n\r\n{pk}\r\n";
                         }
-                        else if (!matchesFilter && action == ShinyFoundAction.ClearCacheAndContinue) // Does not match filter, clear it out
+                        else if (!matchesFilter && action == ShinyFoundAction.ClearAndContinue) // Does not match filter, clear it out
                         {
                             shouldSendEmbed = false;
                             int index = shinyHunter.StashedShinies.IndexOf(pk);

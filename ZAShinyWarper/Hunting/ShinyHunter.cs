@@ -10,7 +10,7 @@ namespace ZAShinyWarper.Hunting
         StopOnFound,
         StopAtFullCache,
         CacheAndContinue,
-        ClearCacheAndContinue
+        ClearAndContinue
     }
 
     public enum IVType
@@ -26,7 +26,7 @@ namespace ZAShinyWarper.Hunting
         Overcast = 1,
         Rain = 2,
         StrongWinds = 3,
-        Windy = 5,        
+        Windy = 5,
         MildWinds = 7,
         Fog = 8,
         IntenseSun = 9,
@@ -55,14 +55,14 @@ namespace ZAShinyWarper.Hunting
         //
         // Pointers courtesy of Kunogi who's awesome for finding them!
         //
-        // Array start: [[main+4200D20]+350]
-        private readonly long[] arrayStartPointer = [0x4200D20, 0x350];
-        // Invalid start: [[main+4200D20]+358]
-        private readonly long[] invalidStartPointer = [0x4200D20, 0x358];
-        // Weather pointer: [[main+41FFC20]+1B0]+0
-        public readonly long[] weatherPointer = [0x41FFC20, 0x1B0];
-        // Time pointer: [[main+41FFC40]+D8]+30
-        private readonly long[] timePointer = [0x41FFC40, 0xD8];
+        // Array start: [[main+4201D20]+350]
+        private readonly long[] arrayStartPointer = [0x4201D20, 0x350];
+        // Invalid start: [[main+4201D20]+358]
+        private readonly long[] invalidStartPointer = [0x4201D20, 0x358];
+        // Weather pointer: [[main+4200C20]+1B0]+0
+        public readonly long[] weatherPointer = [0x4200C20, 0x1B0];
+        // Time pointer: [[main+4200C40]+D8]+30
+        private readonly long[] timePointer = [0x4200C40, 0xD8];
 
         public IList<StashedShiny<T>> PreviousStashedShinies { get; private set; } = [];
         public IList<StashedShiny<T>> StashedShinies { get; private set; } = [];
@@ -107,18 +107,23 @@ namespace ZAShinyWarper.Hunting
             return (T)Activator.CreateInstance(typeof(T), new Memory<byte>(data))!;
         }
 
-        public void SetWeather(IRAMReadWriter bot, Weather weather)
+        public void SetWeather(IRAMReadWriter bot, Weather weather, bool forced = true)
         {
             try
             {
                 var weatherAddress = bot.FollowMainPointer(weatherPointer); // Get address
-                if (weather == Weather.None)
+
+                if (weather == Weather.None && forced)
+                {
                     UnlockWeather();
-                else
+                    return;
+                }
+                else if (weather != Weather.None)
                 {
                     var weatherBytes = BitConverter.GetBytes((uint)weather); // Convert to bytes
                     bot.WriteBytes(weatherBytes, weatherAddress, RWMethod.Absolute); // Write
-                    LockWeather(bot, weather); // lock
+                    if (forced)
+                        LockWeather(bot, weather); // lock
                 }
             }
             catch
@@ -127,24 +132,25 @@ namespace ZAShinyWarper.Hunting
             }
         }
 
-        public void SetTime(IRAMReadWriter bot, TimeOfDay time)
+        public void SetTime(IRAMReadWriter bot, TimeOfDay time, bool forced = true)
         {
             try
             {
                 var timeAddress = bot.FollowMainPointer(timePointer);
                 timeAddress += 0x30;
 
-                if (time == TimeOfDay.None)
+                if (time == TimeOfDay.None && forced)
                 {
                     UnlockTime();
                     return;
                 }
-                else
+                else if (time != TimeOfDay.None)
                 {
                     // Cast enum to float
                     var timeBytes = BitConverter.GetBytes((float)time); // Convert to bytes
                     bot.WriteBytes(timeBytes, timeAddress, RWMethod.Absolute); // Write
-                    LockTime(bot, time);
+                    if (forced)
+                        LockTime(bot, time);
                 }
             }
             catch
