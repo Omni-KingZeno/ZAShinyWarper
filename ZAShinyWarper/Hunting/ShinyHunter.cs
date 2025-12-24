@@ -226,9 +226,9 @@ namespace ZAShinyWarper.Hunting
                 var invalidStartAddress = await connectionWrapper.GetInvalidStartOffset(token);
                 var newInvalidStartAddress = invalidStartAddress - STRUCT_SIZE;
 
-                // Write the new invalid start address back to [[main+4201D20]+358]
+                // Write the new invalid start address back to metabase
                 var metadataBase = await connectionWrapper.GetMetaBaseOffset(token);
-                await connectionWrapper.WriteBytesAbsolute(BitConverter.GetBytes(newInvalidStartAddress), metadataBase + 0x358, token);
+                await connectionWrapper.WriteBytesAbsolute(BitConverter.GetBytes(newInvalidStartAddress), metadataBase + 0x380, token);
             }
             catch (Exception ex)
             {
@@ -250,7 +250,7 @@ namespace ZAShinyWarper.Hunting
 
                 // Set the invalid start address equal to the array start (making count = 0)
                 var metadataBase = await connectionWrapper.GetMetaBaseOffset(token);
-                await connectionWrapper.WriteBytesAbsolute(BitConverter.GetBytes(structArrayStart), metadataBase + 0x358, token);
+                await connectionWrapper.WriteBytesAbsolute(BitConverter.GetBytes(structArrayStart), metadataBase + 0x380, token);
 
                 // Clear local cache
                 StashedShinies = [];

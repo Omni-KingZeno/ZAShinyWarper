@@ -17,12 +17,12 @@ public class ConnectionWrapper(SwitchConnectionConfig Config)
     private bool IsConnected { get; set; }
     private readonly bool CRLF = Config.Protocol is SwitchProtocol.WiFi;
 
-    private readonly long[] jumpsPos = [0x41EF340, 0x248, 0x00, 0x138, 0x90];
-    private readonly long[] weatherPointer = [0x4202C20, 0x1B0, 0x00];
-    private readonly long[] timePointer = [0x4202C40, 0xD8, 0x30];
-    private readonly long[] basePointer = [0x4203D20, 0x00];
-    private readonly long[] arrayStartPointer = [0x4203D20, 0x350, 0x00];
-    private readonly long[] invalidStartPointer = [0x4203D20, 0x358, 0x00];
+    private readonly long[] jumpsPos = [0x47D21A0, 0x248, 0x00, 0x138, 0x90];
+    private readonly long[] weatherPointer = [0x612AC30, 0xB0, 0x28, 0x00];
+    private readonly long[] timePointer = [0x40F9500, 0x20, 0x40, 0x30];
+    private readonly long[] basePointer = [0x40F9500, 0xB8, 0x00];
+    private readonly long[] arrayStartPointer = [0x40F9500, 0xB8, 0x378, 0x00];
+    private readonly long[] invalidStartPointer = [0x40F9500, 0xB8, 0x380, 0x00];
 
     private readonly SemaphoreSlim _connectionLock = new(1, 1);
 
@@ -37,7 +37,7 @@ public class ConnectionWrapper(SwitchConnectionConfig Config)
             IsConnected = true;
             await Connection.SendAsync(DetachController(CRLF), token).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch
         {
             IsConnected = false;
             throw;
@@ -55,7 +55,7 @@ public class ConnectionWrapper(SwitchConnectionConfig Config)
             Connection.Disconnect();
             IsConnected = false;
         }
-        catch (Exception ex)
+        catch
         {
             IsConnected = false;
         }
